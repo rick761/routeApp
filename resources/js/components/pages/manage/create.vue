@@ -22,7 +22,7 @@
                             <option v-for="(land,i) in details.landen" :key="i">
                                 {{land}}
                             </option>                    
-                            </select> 
+                            </select>  
                         </div> 
                         <div class="form-group col-6" >
                             <label for="exampleFormControlSelect1">Met welk vervoer?</label>
