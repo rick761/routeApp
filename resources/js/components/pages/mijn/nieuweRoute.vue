@@ -97,7 +97,13 @@
                         <!--filler-->
                         <div class='block' style='height:50px;'></div>
 
-                    <new-route-map></new-route-map>
+                    <!--leafletMap-->
+                    <leafletMap v-model="clickOnMap" >                            
+                        <leafletMapMarkers :markers="newRoute.patroon" >                                
+                        </leafletMapMarkers>
+                        <leafletMapLines :lines="getPatroonLine" />
+                    </leafletMap> 
+
                     <app-map-sizer v-model='mapsize'></app-map-sizer>
                     </div>
                 </div>   
@@ -111,18 +117,34 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import newRouteMap from '../../map/newRouteMap'
 import appMapSizer from '../../layout/mapSizer'
 
+import leafletMap from '../../map/leafletMap'
+import leafletMapMarkers from '../../map/parts/markers'
+import leafletMapLines from '../../map/parts/lines'
+
 export default {
-    components:{
-        newRouteMap,
-        appMapSizer
+    components:{      
+        appMapSizer,
+
+                //map
+        leafletMap,
+        leafletMapMarkers,
+        leafletMapLines,  
     },
+    
     data(){return{        
         punt_toevoegen_button: false,     
-        mapsize:[6,6]
+        mapsize:[6,6],
+        clickOnMap:''
     }},
+
+    watch :{
+        clickOnMap: function(coordinaten){
+            this.$store.commit('newRoute/AddPatroon', coordinaten ) 
+        }
+    },
+
     methods:{
         CreateRoute(){
             this.$store.dispatch('newRoute/Create');
@@ -180,8 +202,10 @@ export default {
         stap(){ return this.$store.state.newRoute.stap },     
 
         ...mapGetters('newRoute',[            
-            'getGegevens',           
+            'getGegevens', 'getPatroonLine','getBounds'          
         ]),        
+        
+
         ...mapState([
             'newRoute',
             'routeDetails'

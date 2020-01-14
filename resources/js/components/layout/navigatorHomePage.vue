@@ -43,7 +43,7 @@
                 </div>
             </li>
 
-            <li class="nav-item">
+            <li style='display:none;' class="nav-item">
                 <a class="nav-link" data-target="#exampleModalCenter" data-toggle="modal" href="#">Filters</a>
             </li>
 

@@ -30,10 +30,13 @@
 
                     <!--filler-->
                     <div class='block' style='height:50px;'></div>
-                    
-                    <!--map-->
-                    <app-home-page-map></app-home-page-map>       
 
+                    <!--leafletMap-->
+                    <leafletMap :view="getBounds" >
+                        <leafletMapMarkers :markers="hoveredRoute.patroon" />
+                        <leafletMapLines :lines="getMapLine" />
+                    </leafletMap>               
+                    
                     <!--resizer-->        
                     <app-map-sizer v-model='mapsize'></app-map-sizer>
 
@@ -47,11 +50,14 @@
     </div>
 </template>
 <script>
-import { mapState  } from 'vuex';
-import homePageMap from '../map/homePageMap';
+import { mapState, mapGetters } from 'vuex';
 import appMapSizer from '../layout/mapSizer';
-import appExampleMap from "../map/example/exampleMap";
 import appNavigator from "../layout/navigatorHomePage";
+
+//map
+import leafletMap from "../map/leafletMap";
+import leafletMapMarkers from "../map/parts/markers";
+import leafletMapLines from "../map/parts/lines";
 
 export default {
     data(){ return{
@@ -65,13 +71,17 @@ export default {
     },
     computed: {
         ...mapState(['route']),
+        ...mapState('route',['hoveredRoute']),
+        ...mapGetters('route',['getMapLine','getBounds'])
               
     },    
-    components:{
-        appHomePageMap:homePageMap,
-        appMapSizer,
-        appExampleMap,
-        appNavigator
+    components:{        
+        appMapSizer,        
+        appNavigator,
+
+        leafletMap,
+        leafletMapMarkers,
+        leafletMapLines
     },
     created(){        
         this.$store.dispatch('route/fetchRoutes', 'Home' );

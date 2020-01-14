@@ -127,6 +127,8 @@ export default {
                 dispatch('redirecter/redirect','/Mijn',{root:true} );
                 dispatch('route/reloadMyRoutes','', {root:true} );     
                 
+                    
+
                 //reset
                 state.stap = 0;
                 state.informatie = '';

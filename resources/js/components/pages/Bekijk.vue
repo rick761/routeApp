@@ -16,7 +16,7 @@
                     
                     <b>{{index+1}} -  {{routestap.naam}}</b>
                     <br>
-                    "{{routestap.commentaar}}"
+                    <span v-if="routestap.commentaar != undefined" >"{{routestap.commentaar}}"</span>
                 </p>                
 
             </div> 
@@ -25,7 +25,14 @@
                 <div class="sticky-top">
                     <!--filler-->
                     <div class='block' style='height:50px;'></div>
-                    <app-bekijk-route-map></app-bekijk-route-map>         
+
+                    <!--leafletMap-->
+                    <leafletMap :view="getBounds">                            
+                        <leafletMapMarkers :open="true" :markers="bekijkRoute.viewRoute.patroon" >                                
+                        </leafletMapMarkers>
+                        <leafletMapLines :lines="getPatroonLine" />
+                    </leafletMap> 
+
                     <app-map-sizer v-model='mapsize'></app-map-sizer>
                 </div>       
             </div>
@@ -35,21 +42,33 @@
 
 <script>
 import appLoader from '../mechanism/loader'
-import bekijkRouteMap from '../map/bekijkRouteMap'
 import appMapSizer from '../layout/mapSizer'
 import {mapState, mapGetters} from 'vuex' 
+
+import leafletMap from '../map/leafletMap'
+import leafletMapMarkers from '../map/parts/markers'
+import leafletMapLines from '../map/parts/lines'
+
+
 
 export default {
     data(){return{
         mapsize:[6,6]
     }},
     components:{
-        appLoader,
-        appBekijkRouteMap : bekijkRouteMap,
-        appMapSizer
+        appLoader,     
+        appMapSizer,
+
+        //map
+        leafletMap,
+        leafletMapMarkers,
+        leafletMapLines,  
+
     },
     computed:{
-        ...mapState(['bekijkRoute']),
+
+        ...mapState(['bekijkRoute']),        
+        ...mapGetters('bekijkRoute',['getBounds','getPatroonLine']),
         
 
         isLoaded(){            

@@ -5,30 +5,30 @@ import axios from 'axios';
 Vue.use(VueAxios, axios)
 
 export default {
+
     namespaced: true,
-
-
-
     state : { 
         myRoutes : [],
         routes: [],        
-        hoveredRoute :[],
-           
+        hoveredRoute :[],           
     },
 
 
 
     getters : {                
         getMapLine (state){
+            
             let returnWaarde = [];
-            let patroon = state.hoveredRoute.patroon;            
-            if(patroon!=undefined){
+            let patroon = state.hoveredRoute.patroon;         
+
+            if(patroon!=undefined){           
                 for (let index = 0; index < patroon.length; index++) {                
                     if( !(patroon[index].coordinaten[0] == 0 && patroon[index].coordinaten[1] == 0 )){
                         returnWaarde.push (patroon[index].coordinaten );
                     }                              
                 }
             }
+
             return returnWaarde;
         },    
 
@@ -40,8 +40,8 @@ export default {
             let lng_max = 0;
             let lat_min = 9999999;
             let lng_min = 9999999;
-
             let patroon = state.hoveredRoute.patroon;
+
             if(patroon != undefined){
                 for (let index = 0; index < patroon.length; index++) {
                     let lat = patroon[index].coordinaten[0];
@@ -68,9 +68,12 @@ export default {
 
 
     actions : {
+
         setNewRoutes({state,dispatch},payload){
             state.routes = payload;
             dispatch('setRouteDist', 'routes'); 
+
+            
         },
 
         reloadMyRoutes({state,dispatch},payload){
@@ -106,7 +109,8 @@ export default {
                     .get(window.location.origin+'/api/route/get/mijn')
                     .then(response => {          
                         state.myRoutes = response.data;
-                        dispatch('setRouteDist', 'myRoutes');                                    
+                        dispatch('setRouteDist', 'myRoutes');   
+                        console.log('mic check');
                     })
                 }
             }
@@ -114,6 +118,7 @@ export default {
             if(payload == 'Home'){
                 
                 if(state.routes.length == 0){   
+
                     axios
                     .get(window.location.origin+'/api/route/get')
                     .then(response => {                   
@@ -121,6 +126,7 @@ export default {
                         console.log(state.routes);
                         dispatch('setRouteDist', 'routes'); 
                     })          
+
                 }         
             }
         },
@@ -172,7 +178,7 @@ export default {
                         kilometers += afstand;                                                
                     } 
 
-                    //set last to this, for the next loop hole
+                    //set last to this, for the next loop 
                     last_coordinaten = coordinaten;
                 });
 

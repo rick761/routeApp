@@ -11,6 +11,7 @@ export default {
         } 
     },
     mutations : {
+
         setRedirectUrl (state,payload)  {             
             state.redirectUrl = payload;                      
         },
@@ -20,15 +21,20 @@ export default {
         redirectOff (state){
             state.redirectSwitch = false;
         }
+
     },
     actions : {
-        redirect: ({commit}, payload) => {      
+        redirect: ({commit}, payload) => {  
+
             commit('setRedirectUrl',payload);
             commit('redirectOn');            
+
         },
         redirectFinished: ({commit}) => {
+            
             commit('setRedirectUrl','');
             commit('redirectOff');      
+
         }        
     },
 

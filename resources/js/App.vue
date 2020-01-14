@@ -7,8 +7,7 @@
         <app-header></app-header>
 
         <!--alert-->        
-        <app-alert></app-alert>  
-        
+        <app-alert></app-alert>         
 
         <!--redirect mechanisme -->        
         <app-redirecter></app-redirecter>

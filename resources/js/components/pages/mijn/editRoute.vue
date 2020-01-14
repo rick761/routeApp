@@ -102,7 +102,14 @@
                         <!--filler-->
                         <div class='block' style='height:50px;'></div>
 
-                        <edit-route-map></edit-route-map>
+                        <!--leafletMap-->
+                        <leafletMap v-model="clickOnMap" :view="getBounds" >                            
+                            <leafletMapMarkers :markers="editRoute.patroon" >                                
+                            </leafletMapMarkers>
+                            <leafletMapLines :lines="getPatroonLine" />
+                        </leafletMap> 
+                        
+                        <!--mapSizer-->
                         <app-map-sizer v-model='mapsize'></app-map-sizer>
                     </div>
                     
@@ -116,21 +123,34 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import editRouteMap from '../../map/editRouteMap'
+
 import appMapSizer from '../../layout/mapSizer'
 import appLoader from '../../mechanism/loader'
+import leafletMap from '../../map/leafletMap'
+import leafletMapMarkers from '../../map/parts/markers'
+import leafletMapLines from '../../map/parts/lines'
 
 export default {
-    components:{
-        editRouteMap,
+    components:{     
         appMapSizer,
-        appLoader
+        appLoader,
+
+        //map
+        leafletMap,
+        leafletMapMarkers,
+        leafletMapLines,        
     },
     data(){return{        
         punt_toevoegen_button: false,
-        mapsize:[6,6]     
+        mapsize:[6,6],
+        clickOnMap:''     
     }},
-    methods:{
+    watch :{
+        clickOnMap: function(coordinaten){
+            this.$store.commit('editRoute/AddPatroon', coordinaten ) 
+        }
+    },
+    methods:{        
         SaveRoute(){
             this.$store.dispatch('editRoute/Edit', this.$route.params.naam);
         },
@@ -185,12 +205,13 @@ export default {
     },
 
     computed:{    
-        stap(){ 
-            
+        stap(){             
             return this.$store.state.editRoute.stap ;
         },    
-        ...mapGetters('editRoute',['getGegevens','foundRoute']),        
-        ...mapState(['editRoute','routeDetails']),        
+
+        ...mapGetters('editRoute',['getGegevens','foundRoute','getPatroonLine','getBounds']),        
+        ...mapState(['editRoute','routeDetails']),  
+            
     },
 
     created(){           

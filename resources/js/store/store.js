@@ -14,13 +14,12 @@ import routeDetails from './module/route/routeDetails'
 import editRoute from './module/route/editRoute'
 import bekijkRoute from './module/route/bekijkRoute'
 
-
-
 Vue.use(Vuex);
 
 
 export const store = new Vuex.Store({
     modules: {
+
       alert,
       auth,
       route,
@@ -30,5 +29,10 @@ export const store = new Vuex.Store({
       redirecter,
       bekijkRoute,
       filterAndNav
+
+    },
+    actions:{      
+      
+      
     }
 });

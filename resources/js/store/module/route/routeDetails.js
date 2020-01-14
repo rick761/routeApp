@@ -1,19 +1,63 @@
 export default {
     
     state : {
-        vervoer: ['Fiets','Wandelen','Auto'],
-        landen:['Nederland','Frankrijk','Engeland','Spanje'],
-    },
-    getters : {
-         //getReisVervoer(state){return state.vervoer;},
-         //agetLanden(state){return state.landen;}
-    },
-
-    mutations : {
-        
-    },
-    actions : {
-        
-    },
-
+        vervoer: [
+            'Fiets',
+            'Wandelen',
+            'Auto'
+        ],
+        landen:[
+            "Albanië",
+            "Andorra",
+            "Armenië",
+            "Azerbeidzjan",
+            "België",
+            "Bosnië – Herzegovina",
+            "Bulgarije",
+            "Cyprus	",
+            "Denemarken",
+            "Duitsland",
+            "Estland",
+            "Finland",
+            "Frankrijk",
+            "Georgië",
+            "Griekenland",
+            "Hongarije",
+            "Ierland",
+            "IJsland",
+            "Italië",
+            "Kazachstan",
+            "Kosovo",
+            "Kroatië",
+            "Letland",
+            "Liechtenstein",
+            "Litouwen",
+            "Luxemburg",
+            "Macedonië",
+            "Malta",
+            "Moldavië",
+            "Monaco",
+            "Montenegro",
+            "Nederland",
+            "Noorwegen",
+            "Oekraïne",
+            "Oostenrijk",
+            "Polen",
+            "Portugal",
+            "Roemenië",
+            "Rusland",
+            "San Marino",
+            "Servië en Montenegro",
+            "Slovenië",
+            "Slowakije",
+            "Spanje",
+            "Tsjechië",
+            "Turkije",
+            "Vaticaanstad",
+            "Verenigd Koninkrijk",
+            "Wit-Rusland",
+            "Zweden",
+            "Zwitserland"
+        ],
+    }  
  }

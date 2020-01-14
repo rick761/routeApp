@@ -22,7 +22,8 @@ export default {
     getters : {
         foundRoute(state){
             return (state.land != '' );
-        } ,    
+        } ,
+
         getGegevens (state) {
             return {
                 naam: state.naam,
@@ -30,6 +31,7 @@ export default {
                 vervoer: state.vervoer
             }
         },
+        
         getPatroonLine (state){
             let returnWaarde = [];            
             for (let index = 0; index < state.patroon.length; index++) {                
@@ -78,8 +80,7 @@ export default {
             state.CenterCoordinates = payload;
         },
         stapEdit : (state,payload) => {
-          state.stap = payload;  
-          
+          state.stap = payload;            
         },
         AddPatroon  : (state,payload) => {   
             if(state.mapClick){
@@ -150,7 +151,7 @@ export default {
                     state.patroon = JSON.parse(response.data.patroon);                    
 
                 } else {
-                    dispatch('displayMsg', {text:'Error bij het laden',type:'danger'}, {root:true});
+                    dispatch( 'displayMsg', { text:'Error bij het laden',type:'danger' }, {root:true});
                 }
             });
         }

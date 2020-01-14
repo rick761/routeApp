@@ -38,6 +38,7 @@ export default {
             }
             return default_val; //nl kaart
         },
+
         getPatroonLine (state){
             let returnWaarde = [];
             let patroonList = state.viewRoute.patroon;
@@ -50,6 +51,7 @@ export default {
             return returnWaarde;
         },   
     },
+    
     actions:{
         fetchOneRoute({state},payload){      
             axios
