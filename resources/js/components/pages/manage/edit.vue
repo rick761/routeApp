@@ -1,33 +1,32 @@
 <template>
    <div>       
         
-        <!-- loading?? -->
         <app-loader v-show="!foundRoute" ></app-loader>        
 
         <div class='row'>    
             
            <transition name="fade"  mode="out-in"> 
             
-            <!-- STAP 0 : LAND NAAM EN VERVOER-->
+            
             <div  v-if="stap == 0" key="stap0" class="col-12 stapBlock">
                     
                     <div class="form-group">
                         <label for="Naam">Naam van de route?</label>
-                        <input type="text" class="form-control" id="Naam" placeholder="Naam van de Route"  v-model="editRoute.naam" >                
+                        <input type="text" class="form-control" id="Naam" placeholder="Naam van de Route"  v-model="edit.naam" >                
                     </div> 
                     <div class="row">
                         <div class="form-group col-6" >
                             <label for="exampleFormControlSelect1">In welk land?</label>
-                            <select v-model="editRoute.land" class="form-control" id="exampleFormControlSelect1">
-                            <option v-for="(land,i) in routeDetails.landen" :key="i">
+                            <select v-model="edit.land" class="form-control" id="exampleFormControlSelect1">
+                            <option v-for="(land,i) in details.landen" :key="i">
                                 {{land}}
                             </option>                    
                             </select>
                         </div> 
                         <div class="form-group col-6" >
                             <label for="exampleFormControlSelect1">Met welk vervoer?</label>
-                            <select v-model="editRoute.vervoer" class="form-control" id="exampleFormControlSelect1">
-                            <option v-for="(vervoer,i) in routeDetails.vervoer" :key="i">
+                            <select v-model="edit.vervoer" class="form-control" id="exampleFormControlSelect1">
+                            <option v-for="(vervoer,i) in details.vervoer" :key="i">
                                 {{vervoer}}
                             </option>                    
                             </select>
@@ -35,7 +34,7 @@
                     </div>   
                     <div class="form-group">
                             <label for="exampleFormControlTextarea1">Informatie</label>
-                            <textarea v-model="editRoute.informatie" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            <textarea v-model="edit.informatie" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                     </div>     
                     <button type="button" @click="nextStep" class="btn btn-success">Verder</button>
                 </div>
@@ -44,11 +43,11 @@
 
 
 
-                <!-- STAP 1 : MAP COORDINATEN -->       
+                     
                 <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="stap == 1" key="stap1"> 
                     
                     <ul class="list-group">
-                            <li v-for="(onderdeel,index) in editRoute.patroon" :key="index" class="list-group-item">
+                            <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
 
                             <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delPatroonItem(index)" style="float:right">x</button>
                             <label class='pt-2' for="naam2">
@@ -62,7 +61,7 @@
                         </li>                            
                     </ul> 
                     <button :class="'btn btn-success mt-3'" @click="prevStep">Terug</button> 
-                    <button :disabled="editRoute.mapClick" :class="'btn btn-'+[editRoute.mapClick ? 'inverse' : 'primary' ]+' mt-3'" @click="puntToevoegenButton">{{editRoute.mapClick ? 'klik op map':'Punt toevoegen'}}</button>     
+                    <button :disabled="edit.mapClick" :class="'btn btn-'+[edit.mapClick ? 'inverse' : 'primary' ]+' mt-3'" @click="puntToevoegenButton">{{edit.mapClick ? 'klik op map':'Punt toevoegen'}}</button>     
                     <button :class="'btn btn-success mt-3'" @click="nextStep">Verder</button>                                  
                 
                 </div>
@@ -72,12 +71,12 @@
 
                         
 
-                <!-- STAP 2 : Commentaar per stap-->     
+                   
                 <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="stap == 2" key="stap2">                     
                     
 
                     <ul class="list-group">
-                        <li v-for="(onderdeel,index) in editRoute.patroon" :key="index" class="list-group-item">
+                        <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
                         
                             <div class="form-group">
                                 <label for="exampleFormControlTextarea1">{{index}} : {{onderdeel.naam}}</label>
@@ -94,29 +93,30 @@
 
            </transition>
 
-           <!--sticky map-->
+          
             <transition name="fade-map"  mode="out-in"> 
                 <div :class="'col-'+mapsize[1]" v-if="stap != 0">
 
                     <div class='sticky-top' >
-                        <!--filler-->
+                        
                         <div class='block' style='height:50px;'></div>
 
-                        <!--leafletMap-->
+                        
                         <leafletMap v-model="clickOnMap" :view="getBounds" >                            
-                            <leafletMapMarkers :markers="editRoute.patroon" >                                
+                            <leafletMapMarkers :markers="edit.patroon" >                                
                             </leafletMapMarkers>
                             <leafletMapLines :lines="getPatroonLine" />
                         </leafletMap> 
                         
-                        <!--mapSizer-->
+                        
                         <app-map-sizer v-model='mapsize'></app-map-sizer>
                     </div>
                     
                 </div>
             </transition>             
                          
-        </div>             
+        </div> 
+                    
     </div> 
 </template>
 
@@ -147,44 +147,44 @@ export default {
     }},
     watch :{
         clickOnMap: function(coordinaten){
-            this.$store.commit('editRoute/AddPatroon', coordinaten ) 
+            this.$store.commit('route/edit/AddPatroon', coordinaten ) 
         }
     },
     methods:{        
         SaveRoute(){
-            this.$store.dispatch('editRoute/Edit', this.$route.params.naam);
+            this.$store.dispatch('route/edit/Edit', this.$route.params.naam);
         },
         puntToevoegenButton(){
-            this.$store.commit('editRoute/mapClickButton');
+            this.$store.commit('route/edit/mapClickButton');
         },
         stapEdit(i){            
-            this.$store.commit('editRoute/stapEdit',i);    
+            this.$store.commit('route/edit/stapEdit',i);    
         },
         nextStep(){
             switch(this.stap){
                 case 0:
-                    if(this.$store.state.editRoute.naam.length < 7){
+                    if(this.$store.state.route.edit.naam.length < 7){
                         this.$store.dispatch('displayMsg',{text:'De naam is kleiner dan 7 tekens.',type:'danger'})
                         return;
                     }
-                    if(this.$store.state.editRoute.land == ''){
+                    if(this.$store.state.route.edit.land == ''){
                         this.$store.dispatch('displayMsg',{text:'Geen land gekozen',type:'danger'})
                         return;
                     }
-                    if(this.$store.state.editRoute.vervoer == ''){
+                    if(this.$store.state.route.edit.vervoer == ''){
                         this.$store.dispatch('displayMsg',{text:'Geen vervoer gekozen.',type:'danger'})
                         return;
                     }
                     break;
 
                 case 1:                        
-                    for (let index = 0; index < this.$store.state.editRoute.patroon.length; index++) {
-                        if(this.$store.state.editRoute.patroon[index].naam == ""){
+                    for (let index = 0; index < this.$store.state.route.edit.patroon.length; index++) {
+                        if(this.$store.state.route.edit.patroon[index].naam == ""){
                             this.$store.dispatch('displayMsg',{text:'Een naam is niet ingevuld.',type:'danger'})
                             return;
                         }                        
                     }
-                    if(this.$store.state.editRoute.patroon.length < 2){
+                    if(this.$store.state.route.edit.patroon.length < 2){
                         this.$store.dispatch('displayMsg',{text:'Er is geen route',type:'danger'})
                         return;
                     }
@@ -199,23 +199,30 @@ export default {
         },              
        
         delPatroonItem(index){
-            this.$store.commit('editRoute/DelPatroon',index);
+            this.$store.commit('route/edit/DelPatroon',index);
             this.$store.dispatch('displayMsg',{text:'Een punt is verwijderd.',type:'success'})
         }
     },
 
     computed:{    
         stap(){             
-            return this.$store.state.editRoute.stap ;
+            return this.$store.state.route.edit.stap ;
         },    
+        ...mapState({
+            edit : state => state.route.edit,
+            details : state => state.route.details
+        }),
 
-        ...mapGetters('editRoute',['getGegevens','foundRoute','getPatroonLine','getBounds']),        
-        ...mapState(['editRoute','routeDetails']),  
+        ...mapGetters('route/edit',['getGegevens','foundRoute','getPatroonLine','getBounds']),        
+        
+        //...mapState(['editRoute','routeDetails']),  
+
+
             
     },
 
     created(){           
-        this.$store.dispatch('editRoute/getEditGegevens', this.$route.params.naam );          
+        this.$store.dispatch('route/edit/getEditGegevens', this.$route.params.naam );          
     },   
 }
 </script>

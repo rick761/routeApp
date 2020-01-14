@@ -5,9 +5,10 @@ import axios from 'axios';
 Vue.use(VueAxios, axios)
 
 export default {
+
     namespaced: true,
 
-    state:{
+    state:{        
         viewRoute : []   
     },
     getters:{

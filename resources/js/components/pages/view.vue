@@ -1,19 +1,16 @@
 <template>
    <div class="row">
         
-            <!-- loading?? -->    
-            <app-loader v-show="isLoaded" ></app-loader>
-
+            <!-- loading?? -->  
+             
+            <!--<app-loader v-show="isLoaded" ></app-loader>-->
+            
             <div :class="'stapBlock col-'+mapsize[0]" v-if="!isLoaded">
-
-                <h1> {{bekijkRoute.viewRoute.naam}} </h1>
-
-                <p v-if="bekijkRoute.viewRoute.informatie != undefined" >{{bekijkRoute.viewRoute.informatie}}</p>
-
-                <p> - door "{{bekijkRoute.viewRoute.user['name']}}" in "{{bekijkRoute.viewRoute.land}}", het vervoer is "{{bekijkRoute.viewRoute.vervoer}}". </p>
-
-                <p v-for="(routestap,index) in bekijkRoute.viewRoute.patroon" :key='index'>
-                    
+                
+                <h1> {{view.viewRoute.naam}} </h1>
+                <p v-if="view.viewRoute.informatie != undefined" >{{view.viewRoute.informatie}}</p>
+                <p> - door "{{view.viewRoute.user['name']}}" in "{{view.viewRoute.land}}", het vervoer is "{{view.viewRoute.vervoer}}". </p>
+                <p v-for="(routestap,index) in view.viewRoute.patroon" :key='index'>                   
                     <b>{{index+1}} -  {{routestap.naam}}</b>
                     <br>
                     <span v-if="routestap.commentaar != undefined" >"{{routestap.commentaar}}"</span>
@@ -23,12 +20,15 @@
 
             <div :class="'col-'+mapsize[1]" v-if="!isLoaded">
                 <div class="sticky-top">
+                    
                     <!--filler-->
+                     
                     <div class='block' style='height:50px;'></div>
-
+                    
                     <!--leafletMap-->
+                    
                     <leafletMap :view="getBounds">                            
-                        <leafletMapMarkers :open="true" :markers="bekijkRoute.viewRoute.patroon" >                                
+                        <leafletMapMarkers :open="true" :markers="view.viewRoute.patroon" >                                
                         </leafletMapMarkers>
                         <leafletMapLines :lines="getPatroonLine" />
                     </leafletMap> 
@@ -67,17 +67,20 @@ export default {
     },
     computed:{
 
-        ...mapState(['bekijkRoute']),        
-        ...mapGetters('bekijkRoute',['getBounds','getPatroonLine']),
+        ...mapState({
+            view : state => state.route.view
+        }),        
+
+        ...mapGetters('route/view',['getBounds','getPatroonLine']),
         
 
         isLoaded(){            
-            return !(this.$store.state.bekijkRoute.viewRoute.naam != undefined);
+            return !(this.$store.state.route.view.viewRoute.naam != undefined);
         }
 
     },
     created(){
-        this.$store.dispatch('bekijkRoute/fetchOneRoute', this.$route.params.id );
+        this.$store.dispatch('route/view/fetchOneRoute', this.$route.params.id );
         
    }
 }

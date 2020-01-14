@@ -16,7 +16,7 @@
                         <a class="navbar-brand m-3 p-1" >VakantieRouteApp </a>
                     </router-link>
 
-                    <router-link active-class="active" v-if="isLoggedIn" class="nav-item" tag="li" to="/Mijn">
+                    <router-link active-class="active" v-if="isLoggedIn" class="nav-item" tag="li" to="/manage">
                         <a class="nav-link m-3" > Mijn routes</a>
                     </router-link>
                     
@@ -30,7 +30,7 @@
                         <a class="nav-link  m-3" @click="LoginPopup">Login API</a> 
                     </li>  
 
-                    <router-link class="nav-item" v-if="isLoggedIn" tag="li" to="/Profiel">
+                    <router-link class="nav-item" v-if="isLoggedIn" tag="li" to="/account">
                         <a class="nav-link  m-3 pl-2" >
                             <img :src='getAuthUser.avatar' class="rounded-circle mr-2"  width="30" height="30" alt="">
                             Account

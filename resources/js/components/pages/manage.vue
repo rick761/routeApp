@@ -1,17 +1,18 @@
 <template>
-    <div>
-        
+    <div>        
         <ul class="nav"> 
-            <router-link class="nav-item" tag="li" :to="{ name: 'MijnRoute'}" activeClass='active'>
+            <router-link class="nav-item" tag="li" :to="{ name: 'my'}" activeClass='active'>
                 <a  class="nav-link">
                     Huidige routes
                 </a>
-            </router-link>              
-            <router-link class="nav-item" tag="li" :to="{ name: 'NieuweRoute'}" activeClass='active'>
+            </router-link>            
+
+            <router-link class="nav-item" tag="li" :to="{ name: 'create'}" activeClass='active'>
                 <a  class="nav-link">   
                     Nieuwe route
                 </a>
             </router-link>
+            
          </ul>  
         <router-view></router-view>
     </div>

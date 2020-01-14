@@ -9,7 +9,7 @@
                 <table class="table">                  
                     <tbody>
                         <router-link tag="tr" v-for="(routeItem, index) in route.routes" 
-                            :to="'/Bekijk/'+routeItem.id" 
+                            :to="'/view/'+routeItem.id" 
                             :key="index"                                                  
                         >                           
                             <td @mouseover="selectedRoute(routeItem)"   >{{routeItem.naam}} 

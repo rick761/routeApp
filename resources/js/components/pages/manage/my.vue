@@ -38,7 +38,7 @@
             <tbody>
                 <tr v-for="(routeItem, index) in route.myRoutes" :key="index">
                     <th scope="row">
-                        <router-link :to="'/Edit/'+routeItem.naam">
+                        <router-link :to="'/edit/'+routeItem.naam">
                         <button class="btn btn-outline-primary">
                             <i class="fas fa-edit"></i>
                         </button>

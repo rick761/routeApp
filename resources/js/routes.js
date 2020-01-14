@@ -1,20 +1,22 @@
-import Home     from    './components/pages/Home.vue';
-import Bekijk from './components/pages/Bekijk.vue';
-import Mijn     from    './components/pages/Mijn.vue';
-    import MijnRoute  from    './components/pages/mijn/MijnRoute.vue';
-    import NieuweRoute  from    './components/pages/mijn/NieuweRoute.vue';
-    import EditRoute from './components/pages/mijn/EditRoute.vue';    
-import Account  from    './components/pages/Account.vue';
+import home     from    './components/pages/home.vue';
+import view   from    './components/pages/view.vue';
+import manage     from    './components/pages/manage.vue';
+    import my    from    './components/pages/manage/my.vue';
+    import create  from    './components/pages/manage/create.vue';
+    import edit    from    './components/pages/manage/edit.vue';    
+import account          from    './components/pages/account.vue';
 
 
 export const routes = [
-    { path: '',         component: Home,    name: 'Home' },
-    { path: '/bekijk/:id', component: Bekijk, name:'Bekijk' },
-    { path: '/Mijn',    component: Mijn,     children: [
-        {path:'',           component:MijnRoute,    name: 'MijnRoute'},
-        {path:'/Nieuwe',    component:NieuweRoute,  name: 'NieuweRoute'},
-        {path:'/Edit/:naam',      component:EditRoute,  name: 'EditRoute'},        
-    ] },
-    { path: '/Profiel', component: Account, name: 'Profiel' },
+    { path: '',             component: home,    name: 'home' },
+    { path: '/view/:id',  component: view,  name:'view' },
+    { path: '/manage',        component: manage,     children: 
+    [
+        {path:'',                 component:my,      name: 'my'},
+        {path:'/create',          component:create,    name: 'create'},
+        {path:'/edit/:naam',      component:edit,      name: 'edit'},        
+    ]
+ },
+    { path: '/account',     component: account, name: 'account' },
    
 ];

@@ -2,11 +2,25 @@ import Vue from 'vue'
 import VueAxios from 'vue-axios';
 import axios from 'axios';
 
+//children
+import edit from './route/edit'
+import view from './route/view'
+import create from  './route/create'
+import details from './route/details'
+
 Vue.use(VueAxios, axios)
 
 export default {
 
     namespaced: true,
+
+    modules : {
+        edit,
+        view,
+        create,
+        details
+    },
+
     state : { 
         myRoutes : [],
         routes: [],        
@@ -15,26 +29,25 @@ export default {
 
 
 
-    getters : {                
+    getters : {            
+
         getMapLine (state){
             
             let returnWaarde = [];
             let patroon = state.hoveredRoute.patroon;         
 
-            if(patroon!=undefined){           
+            if(patroon != undefined){           
                 for (let index = 0; index < patroon.length; index++) {                
                     if( !(patroon[index].coordinaten[0] == 0 && patroon[index].coordinaten[1] == 0 )){
                         returnWaarde.push (patroon[index].coordinaten );
                     }                              
                 }
             }
-
             return returnWaarde;
         },    
-
-
            
         getBounds(state){
+
             let default_val = [[49.515,0.5761693],[54.477130,10.4638]]; //nederland
             let lat_max = 0;
             let lng_max = 0;
@@ -43,6 +56,7 @@ export default {
             let patroon = state.hoveredRoute.patroon;
 
             if(patroon != undefined){
+
                 for (let index = 0; index < patroon.length; index++) {
                     let lat = patroon[index].coordinaten[0];
                     let lng = patroon[index].coordinaten[1];
@@ -51,29 +65,18 @@ export default {
                     if(lng > lng_max){ lng_max = lng; }
                     if(lng < lng_min){ lng_min = lng; }                       
                 }                              
+
                 return [[lat_min,lng_min],[lat_max,lng_max]]; //bounds
             }
             return default_val; //nl kaart
         }           
     },
 
-
-
-
-    mutations : {
-        
-
-    },
-
-
-
     actions : {
 
         setNewRoutes({state,dispatch},payload){
             state.routes = payload;
-            dispatch('setRouteDist', 'routes'); 
-
-            
+            dispatch('setRouteDist', 'routes');             
         },
 
         reloadMyRoutes({state,dispatch},payload){
