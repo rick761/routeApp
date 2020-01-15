@@ -5,63 +5,82 @@ import axios from 'axios';
 Vue.use(VueAxios, axios)
 
 export default {
-
     namespaced: true,
 
     state:{        
-        viewRoute : []   
+        route : []   
     },
+
     getters:{
-        getBounds(state){
-            let default_val = [[49.515,0.5761693],[54.477130,10.4638]]; //nederland
+        getMapBoundaries(state){                
+            var lowerCoordinates ={ latitude:9999999, longtitude:9999999 }
+            var higherCoordinates = { latitude:0, longtitude:0 }
+            var routeCoordinates = state.route.patroon;           
 
-            let lat_max = 0;
-            let lng_max = 0;
-            let lat_min = 9999999;
-            let lng_min = 9999999;
+            if(routeCoordinates){
+                for (let counter  in routeCoordinates ) {
 
-            let patroon = state.viewRoute.patroon;
-            
-            if(patroon != undefined){
+                    let latitudeItem  = routeCoordinates[counter].coordinaten[0];
+                    let longtitudeItem = routeCoordinates[counter].coordinaten[1];
 
-                for (let index = 0; index < patroon.length; index++) {
+                    latitudeItem > higherCoordinates.latitude ?
+                        higherCoordinates.latitude = latitudeItem : '' ;
 
-                    let lat = patroon[index].coordinaten[0];
-                    let lng = patroon[index].coordinaten[1];
+                    longtitudeItem > higherCoordinates.longtitude ?
+                        higherCoordinates.longtitude = longtitudeItem : '' ;
 
-                    if(lat > lat_max){ lat_max = lat; }
-                    if(lat < lat_min){ lat_min = lat; }
-                    if(lng > lng_max){ lng_max = lng; }
-                    if(lng < lng_min){ lng_min = lng; }   
+                    longtitudeItem < lowerCoordinates.longtitude ?
+                        lowerCoordinates.longtitude = longtitudeItem : '' ;    
+
+                    latitudeItem < lowerCoordinates.latitude ?
+                        lowerCoordinates.latitude = latitudeItem : '' ;                   
                                         
-                }                              
-                return [[lat_min,lng_min],[lat_max,lng_max]]; //bounds
+                }  
+
+                return [
+                    [ lowerCoordinates.latitude,    lowerCoordinates.longtitude ],
+                    [ higherCoordinates.latitude,   higherCoordinates.longtitude]
+                ]; 
             }
-            return default_val; //nl kaart
+            
         },
 
-        getPatroonLine (state){
-            let returnWaarde = [];
-            let patroonList = state.viewRoute.patroon;
-            for (let index = 0; index < patroonList.length; index++) {                
-                if( !(patroonList[index].coordinaten[0] == 0 && patroonList[index].coordinaten[1] == 0 ) )
+        getMapLines (state){
+            let newMapLines = [];
+            let routeCoordinates = state.route.patroon;
+
+            for (let index in routeCoordinates) {  
+
+                var coordinate = routeCoordinates[index].coordinaten;                              
+                if( !(coordinate[0] == 0 && coordinate[1] == 0 ) )
                 {
-                    returnWaarde.push (patroonList[index].coordinaten );
+                    newMapLines.push(coordinate);
                 }                              
-            }            
-            return returnWaarde;
+            }       
+
+            return newMapLines;
         },   
     },
     
+    mutations:{
+        SET_ROUTE(state, route){
+            state.route = route;
+        }
+    },
+
     actions:{
-        fetchOneRoute({state},payload){      
-            axios
-            .get(window.location.origin+'/api/route/getOne?id='+payload)
-            .then(response => {        
-                state.viewRoute = response.data;
-                state.viewRoute.patroon =  JSON.parse( state.viewRoute.patroon );       
+
+        viewRoute({commit},payload){   
+            var oneRouteUrl = window.location.origin+'/api/route/getOne?id='+payload;
+
+            axios.get(oneRouteUrl).then(response => {   
+                //<!-- fix dit in laravel
+                response.data.patroon = JSON.parse( response.data.patroon ); 
+                //-->
+                commit('SET_ROUTE',response.data);                   
             })
         },
+
     }
       
 

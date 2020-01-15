@@ -7,12 +7,8 @@ import auth from './module/tools/auth'
 import redirecter from './module/tools/redirecter'
 import filterAndNav from './module/tools/filterAndNav'
 
-//site modules
+// modules
 import route from './module/route'
-//import newRoute from './module/route/newRoute'
-//import routeDetails from './module/route/details'
-//import editRoute from './module/route/editRoute'
-//import bekijkRoute from './module/route/bekijkRoute'
 
 Vue.use(Vuex);
 
@@ -26,10 +22,7 @@ export const store = new Vuex.Store({
       redirecter,
       filterAndNav
 
-      //newRoute,
-      //routeDetails,
-      //editRoute,      
-      //bekijkRoute,      
+        
 
     },
     actions:{      

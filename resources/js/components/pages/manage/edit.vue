@@ -205,9 +205,11 @@ export default {
     },
 
     computed:{    
+
         stap(){             
             return this.$store.state.route.edit.stap ;
         },    
+
         ...mapState({
             edit : state => state.route.edit,
             details : state => state.route.details
@@ -215,7 +217,7 @@ export default {
 
         ...mapGetters('route/edit',['getGegevens','foundRoute','getPatroonLine','getBounds']),        
         
-        //...mapState(['editRoute','routeDetails']),  
+       
 
 
             

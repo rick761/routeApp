@@ -3,14 +3,14 @@
         
             <!-- loading?? -->  
              
-            <!--<app-loader v-show="isLoaded" ></app-loader>-->
+            <app-loader v-show="isLoaded" ></app-loader>
             
             <div :class="'stapBlock col-'+mapsize[0]" v-if="!isLoaded">
                 
-                <h1> {{view.viewRoute.naam}} </h1>
-                <p v-if="view.viewRoute.informatie != undefined" >{{view.viewRoute.informatie}}</p>
-                <p> - door "{{view.viewRoute.user['name']}}" in "{{view.viewRoute.land}}", het vervoer is "{{view.viewRoute.vervoer}}". </p>
-                <p v-for="(routestap,index) in view.viewRoute.patroon" :key='index'>                   
+                <h1> {{view.route.naam}} </h1>
+                <p v-if="view.route.informatie != undefined" >{{view.route.informatie}}</p>
+                <p> - door "{{view.route.user['name']}}" in "{{view.route.land}}", het vervoer is "{{view.route.vervoer}}". </p>
+                <p v-for="(routestap,index) in view.route.patroon" :key='index'>                   
                     <b>{{index+1}} -  {{routestap.naam}}</b>
                     <br>
                     <span v-if="routestap.commentaar != undefined" >"{{routestap.commentaar}}"</span>
@@ -27,10 +27,10 @@
                     
                     <!--leafletMap-->
                     
-                    <leafletMap :view="getBounds">                            
-                        <leafletMapMarkers :open="true" :markers="view.viewRoute.patroon" >                                
+                    <leafletMap :view="getMapBoundaries">                            
+                        <leafletMapMarkers :open="true" :markers="view.route.patroon" >                                
                         </leafletMapMarkers>
-                        <leafletMapLines :lines="getPatroonLine" />
+                        <leafletMapLines :lines="getMapLines" />
                     </leafletMap> 
 
                     <app-map-sizer v-model='mapsize'></app-map-sizer>
@@ -52,36 +52,31 @@ import leafletMapLines from '../map/parts/lines'
 
 
 export default {
-    data(){return{
+    data(){return{        
         mapsize:[6,6]
     }},
+
     components:{
         appLoader,     
-        appMapSizer,
-
-        //map
+        appMapSizer,        
         leafletMap,
         leafletMapMarkers,
         leafletMapLines,  
-
     },
     computed:{
-
         ...mapState({
             view : state => state.route.view
         }),        
-
-        ...mapGetters('route/view',['getBounds','getPatroonLine']),
-        
-
+        ...mapGetters({
+            getMapBoundaries: 'route/view/getMapBoundaries',
+            getMapLines: 'route/view/getMapLines',
+        }),        
         isLoaded(){            
-            return !(this.$store.state.route.view.viewRoute.naam != undefined);
+            return !(this.$store.state.route.view.route.naam != undefined);
         }
-
     },
     created(){
-        this.$store.dispatch('route/view/fetchOneRoute', this.$route.params.id );
-        
+        this.$store.dispatch('route/view/viewRoute', this.$route.params.id );
    }
 }
 </script>

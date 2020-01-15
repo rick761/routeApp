@@ -3244,7 +3244,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     appLoader: _mechanism_loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     appMapSizer: _layout_mapSizer__WEBPACK_IMPORTED_MODULE_1__["default"],
-    //map
     leafletMap: _map_leafletMap__WEBPACK_IMPORTED_MODULE_3__["default"],
     leafletMapMarkers: _map_parts_markers__WEBPACK_IMPORTED_MODULE_4__["default"],
     leafletMapLines: _map_parts_lines__WEBPACK_IMPORTED_MODULE_5__["default"]
@@ -3253,13 +3252,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     view: function view(state) {
       return state.route.view;
     }
-  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('route/view', ['getBounds', 'getPatroonLine']), {
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])({
+    getMapBoundaries: 'route/view/getMapBoundaries',
+    getMapLines: 'route/view/getMapLines'
+  }), {
     isLoaded: function isLoaded() {
-      return !(this.$store.state.route.view.viewRoute.naam != undefined);
+      return !(this.$store.state.route.view.route.naam != undefined);
     }
   }),
   created: function created() {
-    this.$store.dispatch('route/view/fetchOneRoute', this.$route.params.id);
+    this.$store.dispatch('route/view/viewRoute', this.$route.params.id);
   }
 });
 
@@ -21199,91 +21201,105 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row" }, [
-    !_vm.isLoaded
-      ? _c(
-          "div",
-          { class: "stapBlock col-" + _vm.mapsize[0] },
-          [
-            _c("h1", [_vm._v(" " + _vm._s(_vm.view.viewRoute.naam) + " ")]),
-            _vm._v(" "),
-            _vm.view.viewRoute.informatie != undefined
-              ? _c("p", [_vm._v(_vm._s(_vm.view.viewRoute.informatie))])
-              : _vm._e(),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                ' - door "' +
-                  _vm._s(_vm.view.viewRoute.user["name"]) +
-                  '" in "' +
-                  _vm._s(_vm.view.viewRoute.land) +
-                  '", het vervoer is "' +
-                  _vm._s(_vm.view.viewRoute.vervoer) +
-                  '". '
-              )
-            ]),
-            _vm._v(" "),
-            _vm._l(_vm.view.viewRoute.patroon, function(routestap, index) {
-              return _c("p", { key: index }, [
-                _c("b", [
-                  _vm._v(_vm._s(index + 1) + " -  " + _vm._s(routestap.naam))
-                ]),
-                _vm._v(" "),
-                _c("br"),
-                _vm._v(" "),
-                routestap.commentaar != undefined
-                  ? _c("span", [
-                      _vm._v('"' + _vm._s(routestap.commentaar) + '"')
-                    ])
-                  : _vm._e()
-              ])
-            })
-          ],
-          2
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    !_vm.isLoaded
-      ? _c("div", { class: "col-" + _vm.mapsize[1] }, [
-          _c(
+  return _c(
+    "div",
+    { staticClass: "row" },
+    [
+      _c("app-loader", {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.isLoaded,
+            expression: "isLoaded"
+          }
+        ]
+      }),
+      _vm._v(" "),
+      !_vm.isLoaded
+        ? _c(
             "div",
-            { staticClass: "sticky-top" },
+            { class: "stapBlock col-" + _vm.mapsize[0] },
             [
-              _c("div", {
-                staticClass: "block",
-                staticStyle: { height: "50px" }
-              }),
+              _c("h1", [_vm._v(" " + _vm._s(_vm.view.route.naam) + " ")]),
               _vm._v(" "),
-              _c(
-                "leafletMap",
-                { attrs: { view: _vm.getBounds } },
-                [
-                  _c("leafletMapMarkers", {
-                    attrs: { open: true, markers: _vm.view.viewRoute.patroon }
-                  }),
+              _vm.view.route.informatie != undefined
+                ? _c("p", [_vm._v(_vm._s(_vm.view.route.informatie))])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("p", [
+                _vm._v(
+                  ' - door "' +
+                    _vm._s(_vm.view.route.user["name"]) +
+                    '" in "' +
+                    _vm._s(_vm.view.route.land) +
+                    '", het vervoer is "' +
+                    _vm._s(_vm.view.route.vervoer) +
+                    '". '
+                )
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.view.route.patroon, function(routestap, index) {
+                return _c("p", { key: index }, [
+                  _c("b", [
+                    _vm._v(_vm._s(index + 1) + " -  " + _vm._s(routestap.naam))
+                  ]),
                   _vm._v(" "),
-                  _c("leafletMapLines", {
-                    attrs: { lines: _vm.getPatroonLine }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("app-map-sizer", {
-                model: {
-                  value: _vm.mapsize,
-                  callback: function($$v) {
-                    _vm.mapsize = $$v
-                  },
-                  expression: "mapsize"
-                }
+                  _c("br"),
+                  _vm._v(" "),
+                  routestap.commentaar != undefined
+                    ? _c("span", [
+                        _vm._v('"' + _vm._s(routestap.commentaar) + '"')
+                      ])
+                    : _vm._e()
+                ])
               })
             ],
-            1
+            2
           )
-        ])
-      : _vm._e()
-  ])
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.isLoaded
+        ? _c("div", { class: "col-" + _vm.mapsize[1] }, [
+            _c(
+              "div",
+              { staticClass: "sticky-top" },
+              [
+                _c("div", {
+                  staticClass: "block",
+                  staticStyle: { height: "50px" }
+                }),
+                _vm._v(" "),
+                _c(
+                  "leafletMap",
+                  { attrs: { view: _vm.getMapBoundaries } },
+                  [
+                    _c("leafletMapMarkers", {
+                      attrs: { open: true, markers: _vm.view.route.patroon }
+                    }),
+                    _vm._v(" "),
+                    _c("leafletMapLines", { attrs: { lines: _vm.getMapLines } })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("app-map-sizer", {
+                  model: {
+                    value: _vm.mapsize,
+                    callback: function($$v) {
+                      _vm.mapsize = $$v
+                    },
+                    expression: "mapsize"
+                  }
+                })
+              ],
+              1
+            )
+          ])
+        : _vm._e()
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -50566,64 +50582,62 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
-    viewRoute: []
+    route: []
   },
   getters: {
-    getBounds: function getBounds(state) {
-      var default_val = [[49.515, 0.5761693], [54.477130, 10.4638]]; //nederland
+    getMapBoundaries: function getMapBoundaries(state) {
+      var lowerCoordinates = {
+        latitude: 9999999,
+        longtitude: 9999999
+      };
+      var higherCoordinates = {
+        latitude: 0,
+        longtitude: 0
+      };
+      var routeCoordinates = state.route.patroon;
 
-      var lat_max = 0;
-      var lng_max = 0;
-      var lat_min = 9999999;
-      var lng_min = 9999999;
-      var patroon = state.viewRoute.patroon;
-
-      if (patroon != undefined) {
-        for (var index = 0; index < patroon.length; index++) {
-          var lat = patroon[index].coordinaten[0];
-          var lng = patroon[index].coordinaten[1];
-
-          if (lat > lat_max) {
-            lat_max = lat;
-          }
-
-          if (lat < lat_min) {
-            lat_min = lat;
-          }
-
-          if (lng > lng_max) {
-            lng_max = lng;
-          }
-
-          if (lng < lng_min) {
-            lng_min = lng;
-          }
+      if (routeCoordinates) {
+        for (var counter in routeCoordinates) {
+          var latitudeItem = routeCoordinates[counter].coordinaten[0];
+          var longtitudeItem = routeCoordinates[counter].coordinaten[1];
+          latitudeItem > higherCoordinates.latitude ? higherCoordinates.latitude = latitudeItem : '';
+          longtitudeItem > higherCoordinates.longtitude ? higherCoordinates.longtitude = longtitudeItem : '';
+          longtitudeItem < lowerCoordinates.longtitude ? lowerCoordinates.longtitude = longtitudeItem : '';
+          latitudeItem < lowerCoordinates.latitude ? lowerCoordinates.latitude = latitudeItem : '';
         }
 
-        return [[lat_min, lng_min], [lat_max, lng_max]]; //bounds
+        return [[lowerCoordinates.latitude, lowerCoordinates.longtitude], [higherCoordinates.latitude, higherCoordinates.longtitude]];
       }
-
-      return default_val; //nl kaart
     },
-    getPatroonLine: function getPatroonLine(state) {
-      var returnWaarde = [];
-      var patroonList = state.viewRoute.patroon;
+    getMapLines: function getMapLines(state) {
+      var newMapLines = [];
+      var routeCoordinates = state.route.patroon;
 
-      for (var index = 0; index < patroonList.length; index++) {
-        if (!(patroonList[index].coordinaten[0] == 0 && patroonList[index].coordinaten[1] == 0)) {
-          returnWaarde.push(patroonList[index].coordinaten);
+      for (var index in routeCoordinates) {
+        var coordinate = routeCoordinates[index].coordinaten;
+
+        if (!(coordinate[0] == 0 && coordinate[1] == 0)) {
+          newMapLines.push(coordinate);
         }
       }
 
-      return returnWaarde;
+      return newMapLines;
+    }
+  },
+  mutations: {
+    SET_ROUTE: function SET_ROUTE(state, route) {
+      state.route = route;
     }
   },
   actions: {
-    fetchOneRoute: function fetchOneRoute(_ref, payload) {
-      var state = _ref.state;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/getOne?id=' + payload).then(function (response) {
-        state.viewRoute = response.data;
-        state.viewRoute.patroon = JSON.parse(state.viewRoute.patroon);
+    viewRoute: function viewRoute(_ref, payload) {
+      var commit = _ref.commit;
+      var oneRouteUrl = window.location.origin + '/api/route/getOne?id=' + payload;
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(oneRouteUrl).then(function (response) {
+        //<!-- fix dit in laravel
+        response.data.patroon = JSON.parse(response.data.patroon); //-->
+
+        commit('SET_ROUTE', response.data);
       });
     }
   }
@@ -50911,12 +50925,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- //site modules
+ // modules
 
- //import newRoute from './module/route/newRoute'
-//import routeDetails from './module/route/details'
-//import editRoute from './module/route/editRoute'
-//import bekijkRoute from './module/route/bekijkRoute'
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
@@ -50925,11 +50935,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     auth: _module_tools_auth__WEBPACK_IMPORTED_MODULE_3__["default"],
     route: _module_route__WEBPACK_IMPORTED_MODULE_6__["default"],
     redirecter: _module_tools_redirecter__WEBPACK_IMPORTED_MODULE_4__["default"],
-    filterAndNav: _module_tools_filterAndNav__WEBPACK_IMPORTED_MODULE_5__["default"] //newRoute,
-    //routeDetails,
-    //editRoute,      
-    //bekijkRoute,      
-
+    filterAndNav: _module_tools_filterAndNav__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   actions: {}
 });
