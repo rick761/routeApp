@@ -1,53 +1,83 @@
+
+
+
+
 export default {
-    state: {        
-        msg : { 
-            text: '',
-            type : 'info',
-            show : false,            
-        },
+    namespaced:true,
 
-        msgDisplayCounter:0       
+    state: {               
+        TEXT: '',
+        TYPE : 'info',
+        SHOW : false,  
+        ALERT_ID:0       
     },
 
-    
-    
     getters:{
-        getMsg(state){            
-            return state.msg;
-        }
-    },
-
-
-
-    mutations:{
-        showMsg: (state,payload) => {            
-            state.msg.text  = payload.text;            
-            if(payload.type == null || payload.type == undefined){
-                state.msg.type  = 'primary';
-            } else { state.msg.type = payload.type; }     
-            state.msg.show  = true;
+        GET_ALERT_ID(state){
+            return state.CLICK_COUNTER;
         },
-
-        hideMsg: (state) => {
-            state.msg.show  = false;
+        idIsStillTheSame(getters,payload){
+            return getters.GET_ALERT_ID == payload;
         }
-
     },
 
+    mutations:{        
 
+        HIDE_ALERT: (state) => {
+            state.SHOW  = false;
+        },
+        SHOW_ALERT:(state) => {
+            state.SHOW  = true;
+        },
+        NEW_ALERT_ID:(state) => {
+            state.ALERT_ID++;
+        },
+        SET_TEXT:(state, payload) => {
+            state.TEXT = payload;
+        },
+        SET_TYPE:(state, payload) => {
+            state.TYPE = payload;
+        }
+    },
 
     actions:{
-        displayMsg: ({commit,state}, payload) => {
-            state.msgDisplayCounter++;
-            var thisClick= state.msgDisplayCounter;  
 
-            commit('showMsg',payload)            
-            setTimeout(()=>{
-                if(state.msgDisplayCounter == thisClick ){
-                    commit('hideMsg');   
+        danger({dispatch}, payload){                        
+            var specifications = { 
+                 type : 'danger',
+                 text: payload
+            }
+            dispatch('show',specifications);
+        },
+
+        success({dispatch}, payload){                        
+            var specifications = { 
+                 type : 'success',
+                 text: payload
+            }
+            dispatch('show',specifications);
+        },
+        
+        show({commit,getters},specifications){
+            if(typeof specifications == 'string'){
+                specifications = {
+                    type :'primary',
+                    text: specifications
                 }
-            },2000)            
-        }
+            }
+            commit('SET_TEXT', specifications.text);
+            commit('SET_TYPE', specifications.type);
+            commit('SHOW_ALERT'); 
+
+            commit('NEW_ALERT_ID');
+            var id_thisAlertBox = getters.GET_ALERT_ID;   
+            setTimeout(()=>{
+                if( id_thisAlertBox === getters.GET_ALERT_ID ){
+                    commit('HIDE_ALERT'); 
+                }
+            },2000) 
+        },
+       
     },
     
  }

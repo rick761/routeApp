@@ -1,12 +1,12 @@
 <template>
-     <div class='alert-container sticky-top fixed-top'  v-if="getMsg.show">
+     <div class='alert-container sticky-top fixed-top'  v-if="alert.SHOW">
         
             <div class="sticky-top">
                 <div style="position:absolute;">
                     <div class='fill'>  </div>
                     <transition name="fade">
-                        <div :class="'alert alert-'+getMsg.type" v-if="getMsg.show" role="alert">
-                            <h3 class="mt-2 mb-2">{{getMsg.text}}</h3>
+                        <div :class="'alert alert-'+alert.TYPE" v-if="alert.SHOW" role="alert">
+                            <h3 class="mt-2 mb-2">{{alert.TEXT}}</h3>
                         </div>  
                     </transition>
                 </div>
@@ -18,11 +18,12 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import {mapState} from 'vuex';
 export default {    
     computed:{
-        ...mapGetters(['getMsg']),
-        
+        ...mapState({
+            alert : state => state.alert,
+        }),        
     }
 }
 </script>

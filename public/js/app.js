@@ -1872,7 +1872,14 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     appHeader: _components_layout_header__WEBPACK_IMPORTED_MODULE_0__["default"],
     appAlert: _components_layout_alert__WEBPACK_IMPORTED_MODULE_1__["default"],
-    appRedirecter: _components_mechanism_redirecter__WEBPACK_IMPORTED_MODULE_2__["default"]
+    redirecter: _components_mechanism_redirecter__WEBPACK_IMPORTED_MODULE_2__["default"]
+  },
+  methods: {
+    dispatch: function dispatch(route, payload) {
+      this.$store.dispatch(route, payload, {
+        root: true
+      });
+    }
   },
   created: function created() {
     this.$store.dispatch('fetchAuthAtStartup');
@@ -1918,7 +1925,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['getMsg']))
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
+    alert: function alert(state) {
+      return state.alert;
+    }
+  }))
 });
 
 /***/ }),
@@ -2937,6 +2948,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2947,13 +2965,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     appMapSizer: _layout_mapSizer__WEBPACK_IMPORTED_MODULE_1__["default"],
     appLoader: _mechanism_loader__WEBPACK_IMPORTED_MODULE_2__["default"],
-    //map
     leafletMap: _map_leafletMap__WEBPACK_IMPORTED_MODULE_3__["default"],
     leafletMapMarkers: _map_parts_markers__WEBPACK_IMPORTED_MODULE_4__["default"],
     leafletMapLines: _map_parts_lines__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
+      subPagePosition: 0,
+      mapClickEnabled: false,
       punt_toevoegen_button: false,
       mapsize: [6, 6],
       clickOnMap: ''
@@ -2961,97 +2980,98 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     clickOnMap: function clickOnMap(coordinaten) {
-      this.$store.commit('route/edit/AddPatroon', coordinaten);
+      if (this.mapClickEnabled) {
+        this.$store.dispatch('route/edit/newCoordinates', coordinaten);
+      }
+
+      this.mapClickEnabled = false;
     }
   },
   methods: {
-    SaveRoute: function SaveRoute() {
-      this.$store.dispatch('route/edit/Edit', this.$route.params.naam);
+    setsubPagePosition: function setsubPagePosition(i) {
+      this.subPagePosition = i;
     },
     puntToevoegenButton: function puntToevoegenButton() {
-      this.$store.commit('route/edit/mapClickButton');
+      this.mapClickEnabled = !this.mapClickEnabled;
     },
-    stapEdit: function stapEdit(i) {
-      this.$store.commit('route/edit/stapEdit', i);
-    },
-    nextStep: function nextStep() {
-      switch (this.stap) {
+    nextSubPage: function nextSubPage() {
+      var route = this.$store.state.route.edit;
+
+      switch (this.subPagePosition) {
         case 0:
-          if (this.$store.state.route.edit.naam.length < 7) {
-            this.$store.dispatch('displayMsg', {
-              text: 'De naam is kleiner dan 7 tekens.',
-              type: 'danger'
-            });
+          if (this.lengthSmallerThen(route.naam, 7)) {
+            this.dispatch('alert/danger', 'De naam is kleiner dan 7 tekens.');
             return;
           }
 
-          if (this.$store.state.route.edit.land == '') {
-            this.$store.dispatch('displayMsg', {
-              text: 'Geen land gekozen',
-              type: 'danger'
-            });
+          if (this.emptyString(route.land)) {
+            this.dispatch('alert/danger', 'Geen land gekozen');
             return;
           }
 
-          if (this.$store.state.route.edit.vervoer == '') {
-            this.$store.dispatch('displayMsg', {
-              text: 'Geen vervoer gekozen.',
-              type: 'danger'
-            });
+          if (this.emptyString(route.vervoer)) {
+            this.dispatch('alert/danger', 'Geen vervoer gekozen.');
             return;
           }
 
           break;
 
         case 1:
-          for (var index = 0; index < this.$store.state.route.edit.patroon.length; index++) {
-            if (this.$store.state.route.edit.patroon[index].naam == "") {
-              this.$store.dispatch('displayMsg', {
-                text: 'Een naam is niet ingevuld.',
-                type: 'danger'
-              });
+          for (var index in route.patroon) {
+            if (this.emptyString(route.patroon[index].naam)) {
+              this.dispatch('alert/danger', 'Een naam is niet ingevuld.');
               return;
             }
           }
 
-          if (this.$store.state.route.edit.patroon.length < 2) {
-            this.$store.dispatch('displayMsg', {
-              text: 'Er is geen route',
-              type: 'danger'
-            });
+          if (this.lengthSmallerThen(route.patroon, 2)) {
+            this.dispatch('alert/danger', 'Er is geen route');
             return;
           }
 
           break;
       }
 
-      this.stapEdit(this.stap + 1);
+      this.setsubPagePosition(this.subPagePosition + 1);
     },
-    prevStep: function prevStep() {
-      this.stapEdit(this.stap - 1);
+    previousStepSubPage: function previousStepSubPage() {
+      this.setsubPagePosition(this.subPagePosition - 1);
     },
     delPatroonItem: function delPatroonItem(index) {
-      this.$store.commit('route/edit/DelPatroon', index);
-      this.$store.dispatch('displayMsg', {
-        text: 'Een punt is verwijderd.',
-        type: 'success'
+      this.$store.dispatch('route/edit/removeCoordinate', index);
+      this.$store.dispatch('alert/success', 'Een punt is verwijderd.');
+    },
+    SaveRoute: function SaveRoute() {
+      this.dispatch('route/edit/save', this.$route.params.naam);
+    },
+    //operating Functions
+    dispatch: function dispatch(route, parameter) {
+      this.$store.dispatch(route, parameter, {
+        root: true
       });
-    }
+    },
+    emptyString: function emptyString(string) {
+      return string == '';
+    },
+    lengthSmallerThen: function lengthSmallerThen(string, number) {
+      return string.length < number;
+    } //end operating functions
+
   },
-  computed: _objectSpread({
-    stap: function stap() {
-      return this.$store.state.route.edit.stap;
-    }
-  }, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
     edit: function edit(state) {
       return state.route.edit;
     },
     details: function details(state) {
       return state.route.details;
     }
-  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('route/edit', ['getGegevens', 'foundRoute', 'getPatroonLine', 'getBounds'])),
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
+    hasRouteLoaded: 'route/edit/hasRouteLoaded',
+    getMapLines: 'route/edit/mapLines/GET_MAP_LINES',
+    getMapBoundaries: 'route/edit/mapBoundaries/GET_MAP_BOUNDARIES'
+  })),
   created: function created() {
-    this.$store.dispatch('route/edit/getEditGegevens', this.$route.params.naam);
+    this.$store.dispatch('route/edit/load', this.$route.params.naam);
   }
 });
 
@@ -3227,8 +3247,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 
@@ -3253,8 +3271,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return state.route.view;
     }
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])({
-    getMapBoundaries: 'route/view/getMapBoundaries',
-    getMapLines: 'route/view/getMapLines'
+    getMapBoundaries: 'route/view/mapBoundaries/GET_MAP_BOUNDARIES',
+    getMapLines: 'route/view/mapLines/GET_MAP_LINES'
   }), {
     isLoaded: function isLoaded() {
       return !(this.$store.state.route.view.route.naam != undefined);
@@ -3279,7 +3297,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** global CSS */\nh1{\n    margin-bottom:40px;\n}\n.leaflet-control-attribution a, .leaflet-control-zoom {\n    display:none;\n}\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** global CSS */\nh1{\n    margin-bottom:40px;\n}\n.leaflet-control-attribution a, .leaflet-control-zoom {\n    display:none;\n}\n", ""]);
 
 // exports
 
@@ -19055,7 +19073,7 @@ var render = function() {
       _vm._v(" "),
       _c("app-alert"),
       _vm._v(" "),
-      _c("app-redirecter"),
+      _c("redirecter"),
       _vm._v(" "),
       _c(
         "transition",
@@ -19089,7 +19107,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm.getMsg.show
+  return _vm.alert.SHOW
     ? _c("div", { staticClass: "alert-container sticky-top fixed-top" }, [
         _c("div", { staticClass: "sticky-top" }, [
           _c(
@@ -19099,16 +19117,16 @@ var render = function() {
               _c("div", { staticClass: "fill" }),
               _vm._v(" "),
               _c("transition", { attrs: { name: "fade" } }, [
-                _vm.getMsg.show
+                _vm.alert.SHOW
                   ? _c(
                       "div",
                       {
-                        class: "alert alert-" + _vm.getMsg.type,
+                        class: "alert alert-" + _vm.alert.TYPE,
                         attrs: { role: "alert" }
                       },
                       [
                         _c("h3", { staticClass: "mt-2 mb-2" }, [
-                          _vm._v(_vm._s(_vm.getMsg.text))
+                          _vm._v(_vm._s(_vm.alert.TEXT))
                         ])
                       ]
                     )
@@ -20531,8 +20549,8 @@ var render = function() {
           {
             name: "show",
             rawName: "v-show",
-            value: !_vm.foundRoute,
-            expression: "!foundRoute"
+            value: !_vm.hasRouteLoaded,
+            expression: "!hasRouteLoaded"
           }
         ]
       }),
@@ -20542,7 +20560,7 @@ var render = function() {
         { staticClass: "row" },
         [
           _c("transition", { attrs: { name: "fade", mode: "out-in" } }, [
-            _vm.stap == 0
+            _vm.subPagePosition == 0
               ? _c("div", { key: "stap0", staticClass: "col-12 stapBlock" }, [
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { attrs: { for: "Naam" } }, [
@@ -20719,14 +20737,14 @@ var render = function() {
                     {
                       staticClass: "btn btn-success",
                       attrs: { type: "button" },
-                      on: { click: _vm.nextStep }
+                      on: { click: _vm.nextSubPage }
                     },
                     [_vm._v("Verder")]
                   )
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _vm.stap == 1
+            _vm.subPagePosition == 1
               ? _c(
                   "div",
                   {
@@ -20760,7 +20778,10 @@ var render = function() {
                             _vm._v(" "),
                             _c(
                               "label",
-                              { staticClass: "pt-2", attrs: { for: "naam2" } },
+                              {
+                                staticClass: "pt-2",
+                                attrs: { for: "naam" + index }
+                              },
                               [
                                 _vm._v(
                                   "\n                             Punt " +
@@ -20790,7 +20811,7 @@ var render = function() {
                               staticClass: "form-control",
                               attrs: {
                                 type: "text",
-                                id: "naam2",
+                                id: "naam" + index,
                                 "aria-describedby": "naam2",
                                 placeholder: "Vul naam in."
                               },
@@ -20818,7 +20839,7 @@ var render = function() {
                       "button",
                       {
                         class: "btn btn-success mt-3",
-                        on: { click: _vm.prevStep }
+                        on: { click: _vm.previousStepSubPage }
                       },
                       [_vm._v("Terug")]
                     ),
@@ -20828,16 +20849,20 @@ var render = function() {
                       {
                         class:
                           "btn btn-" +
-                          [_vm.edit.mapClick ? "inverse" : "primary"] +
+                          [this.mapClickEnabled ? "inverse" : "primary"] +
                           " mt-3",
-                        attrs: { disabled: _vm.edit.mapClick },
+                        attrs: { disabled: this.mapClickEnabled },
                         on: { click: _vm.puntToevoegenButton }
                       },
                       [
                         _vm._v(
-                          _vm._s(
-                            _vm.edit.mapClick ? "klik op map" : "Punt toevoegen"
-                          )
+                          "                        \n                     " +
+                            _vm._s(
+                              this.mapClickEnabled
+                                ? "klik op map"
+                                : "Punt toevoegen"
+                            ) +
+                            "                    \n                 "
                         )
                       ]
                     ),
@@ -20846,7 +20871,7 @@ var render = function() {
                       "button",
                       {
                         class: "btn btn-success mt-3",
-                        on: { click: _vm.nextStep }
+                        on: { click: _vm.nextSubPage }
                       },
                       [_vm._v("Verder")]
                     )
@@ -20854,7 +20879,7 @@ var render = function() {
                 )
               : _vm._e(),
             _vm._v(" "),
-            _vm.stap == 2
+            _vm.subPagePosition == 2
               ? _c(
                   "div",
                   {
@@ -20925,7 +20950,7 @@ var render = function() {
                       "button",
                       {
                         class: "btn btn-success mt-3",
-                        on: { click: _vm.prevStep }
+                        on: { click: _vm.previousStepSubPage }
                       },
                       [_vm._v("Terug")]
                     ),
@@ -20944,7 +20969,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("transition", { attrs: { name: "fade-map", mode: "out-in" } }, [
-            _vm.stap != 0
+            _vm.subPagePosition != 0
               ? _c("div", { class: "col-" + _vm.mapsize[1] }, [
                   _c(
                     "div",
@@ -20958,7 +20983,7 @@ var render = function() {
                       _c(
                         "leafletMap",
                         {
-                          attrs: { view: _vm.getBounds },
+                          attrs: { view: _vm.getMapBoundaries },
                           model: {
                             value: _vm.clickOnMap,
                             callback: function($$v) {
@@ -20973,7 +20998,7 @@ var render = function() {
                           }),
                           _vm._v(" "),
                           _c("leafletMapLines", {
-                            attrs: { lines: _vm.getPatroonLine }
+                            attrs: { lines: _vm.getMapLines }
                           })
                         ],
                         1
@@ -50181,6 +50206,119 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 
 /***/ }),
 
+/***/ "./resources/js/store/module/route/calculation/mapBoundaries.js":
+/*!**********************************************************************!*\
+  !*** ./resources/js/store/module/route/calculation/mapBoundaries.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    LOWER_COORDINATES: {
+      latitude: 9999999,
+      longtitude: 9999999
+    },
+    HIGHER_COORDINATES: {
+      latitude: 0,
+      longtitude: 0
+    }
+  },
+  getters: {
+    GET_MAP_BOUNDARIES: function GET_MAP_BOUNDARIES(state) {
+      return [[state.LOWER_COORDINATES.latitude, state.LOWER_COORDINATES.longtitude], [state.HIGHER_COORDINATES.latitude, state.HIGHER_COORDINATES.longtitude]];
+    }
+  },
+  mutations: {
+    SET_HIGHER_COORDINATES_LATITUDE: function SET_HIGHER_COORDINATES_LATITUDE(state, payload) {
+      state.HIGHER_COORDINATES.latitude = payload;
+      console.log('SET_HIGHER_COORDINATES_LATITUDE');
+    },
+    SET_HIGHER_COORDINATES_LONGTITUDE: function SET_HIGHER_COORDINATES_LONGTITUDE(state, payload) {
+      state.HIGHER_COORDINATES.longtitude = payload;
+      console.log('SET_HIGHER_COORDINATES_LONGTITUDE');
+    },
+    SET_LOWER_COORDINATES_LATITUDE: function SET_LOWER_COORDINATES_LATITUDE(state, payload) {
+      state.LOWER_COORDINATES.latitude = payload;
+      console.log('SET_LOWER_COORDINATES_LATITUDE');
+    },
+    SET_LOWER_COORDINATES_LONGTITUDE: function SET_LOWER_COORDINATES_LONGTITUDE(state, payload) {
+      state.LOWER_COORDINATES.longtitude = payload;
+      console.log('SET_LOWER_COORDINATES_LONGTITUDE');
+    }
+  },
+  actions: {
+    createMapBoundaries: function createMapBoundaries(_ref, coordinates) {
+      var commit = _ref.commit,
+          state = _ref.state;
+
+      if (coordinates) {
+        for (var counter in coordinates) {
+          var latitudeItem = coordinates[counter].coordinaten[0];
+          var longtitudeItem = coordinates[counter].coordinaten[1];
+          latitudeItem > state.HIGHER_COORDINATES.latitude ? commit('SET_HIGHER_COORDINATES_LATITUDE', latitudeItem) : '';
+          longtitudeItem > state.HIGHER_COORDINATES.longtitude ? commit('SET_HIGHER_COORDINATES_LONGTITUDE', longtitudeItem) : '';
+          latitudeItem < state.LOWER_COORDINATES.latitude ? commit('SET_LOWER_COORDINATES_LATITUDE', latitudeItem) : '';
+          longtitudeItem < state.LOWER_COORDINATES.longtitude ? commit('SET_LOWER_COORDINATES_LONGTITUDE', longtitudeItem) : '';
+        }
+      }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/module/route/calculation/mapLines.js":
+/*!*****************************************************************!*\
+  !*** ./resources/js/store/module/route/calculation/mapLines.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    MAP_LINES: []
+  },
+  getters: {
+    GET_MAP_LINES: function GET_MAP_LINES(state) {
+      return state.MAP_LINES;
+    }
+  },
+  mutations: {
+    ADD_MAP_LINE: function ADD_MAP_LINE(state, payload) {
+      state.MAP_LINES.push(payload);
+      console.log('ADD_MAP_LINE');
+    },
+    RESET_MAP_LINES: function RESET_MAP_LINES(state) {
+      state.MAP_LINES = [];
+      console.log('RESET_MAP_LINES');
+    }
+  },
+  actions: {
+    createMapLines: function createMapLines(_ref, coordinates) {
+      var commit = _ref.commit;
+      commit('RESET_MAP_LINES');
+
+      for (var index in coordinates) {
+        var latitude = coordinates[index].coordinaten[0];
+        var longtitude = coordinates[index].coordinaten[1];
+
+        if (!(latitude == 0 && longtitude == 0)) {
+          commit('ADD_MAP_LINE', coordinates[index].coordinaten);
+        }
+      }
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/store/module/route/create.js":
 /*!***************************************************!*\
   !*** ./resources/js/store/module/route/create.js ***!
@@ -50381,7 +50519,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculation/mapBoundaries */ "./resources/js/store/module/route/calculation/mapBoundaries.js");
+/* harmony import */ var _calculation_mapLines__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./calculation/mapLines */ "./resources/js/store/module/route/calculation/mapLines.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+
 
 
 
@@ -50389,131 +50531,95 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_1___default.a, axios__WEBPACK_IMPORTED_MODULE_2___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
+  modules: {
+    mapBoundaries: _calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_3__["default"],
+    mapLines: _calculation_mapLines__WEBPACK_IMPORTED_MODULE_4__["default"]
+  },
   state: {
-    stap: 0,
     land: '',
     vervoer: '',
     naam: '',
     informatie: '',
-    CenterCoordinates: [52.237993, 6.161133],
-    mapClick: false,
     patroon: []
   },
   getters: {
-    foundRoute: function foundRoute(state) {
-      return state.land != '';
-    },
-    getGegevens: function getGegevens(state) {
-      return {
-        naam: state.naam,
-        land: state.land,
-        vervoer: state.vervoer
-      };
-    },
-    getPatroonLine: function getPatroonLine(state) {
-      var returnWaarde = [];
-
-      for (var index = 0; index < state.patroon.length; index++) {
-        if (!(state.patroon[index].coordinaten[0] == 0 && state.patroon[index].coordinaten[1] == 0)) {
-          returnWaarde.push(state.patroon[index].coordinaten);
-        }
-      }
-
-      return returnWaarde;
-    },
-    //boundary of map
-    getBounds: function getBounds(state) {
-      var default_val = [[49.515, 0.5761693], [54.477130, 10.4638]]; //nederland
-
-      var lat_max = 0;
-      var lng_max = 0;
-      var lat_min = 9999999;
-      var lng_min = 9999999;
-      var patroon = state.patroon;
-
-      if (patroon != undefined) {
-        for (var index = 0; index < patroon.length; index++) {
-          var lat = patroon[index].coordinaten[0];
-          var lng = patroon[index].coordinaten[1];
-
-          if (lat > lat_max) {
-            lat_max = lat;
-          }
-
-          if (lat < lat_min) {
-            lat_min = lat;
-          }
-
-          if (lng > lng_max) {
-            lng_max = lng;
-          }
-
-          if (lng < lng_min) {
-            lng_min = lng;
-          }
-        }
-
-        return [[lat_min, lng_min], [lat_max, lng_max]]; //bounds
-      }
-
-      return default_val; //nl kaart
+    hasRouteLoaded: function hasRouteLoaded(state) {
+      return state.land != '' || state.vervoer != '' || state.naam != '';
     }
   },
   mutations: {
-    SetCenter: function SetCenter(state, payload) {
-      state.CenterCoordinates = payload;
+    ADD_ROUTE_COORDINATES: function ADD_ROUTE_COORDINATES(state, coordinate) {
+      var coordinateObject = {
+        naam: '',
+        coordinaten: [coordinate.lat, coordinate.lng]
+      };
+      state.patroon.push(coordinateObject);
+      console.log('ADD_ROUTE_COORDINATES');
     },
-    stapEdit: function stapEdit(state, payload) {
-      state.stap = payload;
-    },
-    AddPatroon: function AddPatroon(state, payload) {
-      if (state.mapClick) {
-        state.patroon.push({
-          naam: '',
-          coordinaten: [payload.lat, payload.lng]
-        }); // last item           
-
-        state.mapClick = false;
-      }
-    },
-    mapClickButton: function mapClickButton(state) {
-      state.mapClick = !state.mapClick;
-    },
-    DelPatroon: function DelPatroon(state, payload) {
+    DELETE_ROUTE_COORDINATES: function DELETE_ROUTE_COORDINATES(state, payload) {
       state.patroon.splice(payload, 1);
+      console.log('DELETE_ROUTE_COORDINATES');
+    },
+    RESET_ROUTE: function RESET_ROUTE(state) {
+      state.stap = 0;
+      state.informatie = '';
+      state.land = '';
+      state.naam = '';
+      state.vervoer = '';
+      state.patroon = [];
+      console.log('RESET_ROUTE');
+    },
+    SET_ROUTE: function SET_ROUTE(state, route) {
+      state.informatie = route.informatie;
+      state.land = route.land;
+      state.naam = route.naam;
+      state.vervoer = route.vervoer;
+      state.patroon = JSON.parse(route.patroon);
+      console.log('SET_ROUTE');
     }
   },
   actions: {
-    Edit: function Edit(_ref, payload) {
+    newCoordinates: function newCoordinates(_ref, coordinate) {
       var state = _ref.state,
+          commit = _ref.commit,
           dispatch = _ref.dispatch;
-      //data
-      var toSend = {};
-      toSend.informatie = state.informatie;
-      toSend.land = state.land;
-      toSend.naam = state.naam;
-      toSend.vervoer = state.vervoer;
-      toSend.patroon = state.patroon; //apiCall
+      commit('ADD_ROUTE_COORDINATES', coordinate);
+      dispatch('mapBoundaries/createMapBoundaries', state.patroon);
+      dispatch('mapLines/createMapLines', state.patroon);
+    },
+    removeCoordinate: function removeCoordinate(_ref2, index) {
+      var commit = _ref2.commit,
+          dispatch = _ref2.dispatch,
+          state = _ref2.state;
+      console.log(index);
+      commit('DELETE_ROUTE_COORDINATES', index);
+      dispatch('mapBoundaries/createMapBoundaries', state.patroon);
+      dispatch('mapLines/createMapLines', state.patroon);
+    },
+    save: function save(_ref3, naam) {
+      var state = _ref3.state,
+          dispatch = _ref3.dispatch,
+          commit = _ref3.commit;
+      var postObj = {
+        toEdit: naam,
+        toSend: {
+          informatie: state.informatie,
+          land: state.land,
+          naam: state.naam,
+          vervoer: state.vervoer,
+          patroon: state.patroon
+        }
+      }; //apiCall
 
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(window.location.origin + '/api/route/edit/save', {
-        toEdit: payload,
-        toSend: toSend
-      }).then(function (response) {
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(window.location.origin + '/api/route/edit/save', postObj).then(function (response) {
         if (response.data == "error") {
-          dispatch('displayMsg', {
-            text: 'Er is iets fout gegaan.',
-            type: 'danger'
-          }, {
+          dispatch('alert/danger', 'Er is iets fout gegaan.', {
             root: true
           });
           return;
-        } //msg and redirect
+        }
 
-
-        dispatch('displayMsg', {
-          text: 'Route is aangepast.',
-          type: 'success'
-        }, {
+        dispatch('alert/success', 'Route is aangepast.', {
           root: true
         });
         dispatch('redirecter/redirect', '/Mijn', {
@@ -50521,35 +50627,23 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
         });
         dispatch('route/reloadMyRoutes', '', {
           root: true
-        }); //reset
-
-        state.stap = 0;
-        state.informatie = '';
-        state.land = '';
-        state.naam = '';
-        state.vervoer = '';
-        state.patroon = [];
+        });
+        commit('RESET_ROUTE');
       });
     },
-    getEditGegevens: function getEditGegevens(_ref2, payload) {
-      var state = _ref2.state,
-          dispatch = _ref2.dispatch;
-      //api call
+    load: function load(_ref4, payload) {
+      var dispatch = _ref4.dispatch,
+          commit = _ref4.commit;
       axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(window.location.origin + '/api/route/edit/load', {
         naam: payload
       }).then(function (response) {
         if (_typeof(response.data) == 'object') {
-          state.stap = 0;
-          state.informatie = response.data.informatie;
-          state.land = response.data.land;
-          state.naam = response.data.naam;
-          state.vervoer = response.data.vervoer;
-          state.patroon = JSON.parse(response.data.patroon);
+          commit("SET_ROUTE", response.data);
+          var routeCoordinates = JSON.parse(response.data.patroon);
+          dispatch('mapBoundaries/createMapBoundaries', routeCoordinates);
+          dispatch('mapLines/createMapLines', routeCoordinates);
         } else {
-          dispatch('displayMsg', {
-            text: 'Error bij het laden',
-            type: 'danger'
-          }, {
+          dispatch('alert/danger', 'Error bij het laden', {
             root: true
           });
         }
@@ -50575,69 +50669,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculation/mapBoundaries */ "./resources/js/store/module/route/calculation/mapBoundaries.js");
+/* harmony import */ var _calculation_mapLines__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./calculation/mapLines */ "./resources/js/store/module/route/calculation/mapLines.js");
+
+
 
 
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_1___default.a, axios__WEBPACK_IMPORTED_MODULE_2___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
+  modules: {
+    mapBoundaries: _calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_3__["default"],
+    mapLines: _calculation_mapLines__WEBPACK_IMPORTED_MODULE_4__["default"]
+  },
   state: {
     route: []
   },
-  getters: {
-    getMapBoundaries: function getMapBoundaries(state) {
-      var lowerCoordinates = {
-        latitude: 9999999,
-        longtitude: 9999999
-      };
-      var higherCoordinates = {
-        latitude: 0,
-        longtitude: 0
-      };
-      var routeCoordinates = state.route.patroon;
-
-      if (routeCoordinates) {
-        for (var counter in routeCoordinates) {
-          var latitudeItem = routeCoordinates[counter].coordinaten[0];
-          var longtitudeItem = routeCoordinates[counter].coordinaten[1];
-          latitudeItem > higherCoordinates.latitude ? higherCoordinates.latitude = latitudeItem : '';
-          longtitudeItem > higherCoordinates.longtitude ? higherCoordinates.longtitude = longtitudeItem : '';
-          longtitudeItem < lowerCoordinates.longtitude ? lowerCoordinates.longtitude = longtitudeItem : '';
-          latitudeItem < lowerCoordinates.latitude ? lowerCoordinates.latitude = latitudeItem : '';
-        }
-
-        return [[lowerCoordinates.latitude, lowerCoordinates.longtitude], [higherCoordinates.latitude, higherCoordinates.longtitude]];
-      }
-    },
-    getMapLines: function getMapLines(state) {
-      var newMapLines = [];
-      var routeCoordinates = state.route.patroon;
-
-      for (var index in routeCoordinates) {
-        var coordinate = routeCoordinates[index].coordinaten;
-
-        if (!(coordinate[0] == 0 && coordinate[1] == 0)) {
-          newMapLines.push(coordinate);
-        }
-      }
-
-      return newMapLines;
-    }
-  },
+  getters: {},
   mutations: {
     SET_ROUTE: function SET_ROUTE(state, route) {
       state.route = route;
+      console.log('SET_ROUTE');
     }
   },
   actions: {
     viewRoute: function viewRoute(_ref, payload) {
-      var commit = _ref.commit;
+      var commit = _ref.commit,
+          dispatch = _ref.dispatch;
       var oneRouteUrl = window.location.origin + '/api/route/getOne?id=' + payload;
       axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(oneRouteUrl).then(function (response) {
         //<!-- fix dit in laravel
-        response.data.patroon = JSON.parse(response.data.patroon); //-->
+        response.data.patroon = JSON.parse(response.data.patroon); //-->                
 
         commit('SET_ROUTE', response.data);
+        dispatch('mapBoundaries/createMapBoundaries', response.data.patroon);
+        dispatch('mapLines/createMapLines', response.data.patroon);
       });
     }
   }
@@ -50655,45 +50722,74 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
   state: {
-    msg: {
-      text: '',
-      type: 'info',
-      show: false
-    },
-    msgDisplayCounter: 0
+    TEXT: '',
+    TYPE: 'info',
+    SHOW: false,
+    ALERT_ID: 0
   },
   getters: {
-    getMsg: function getMsg(state) {
-      return state.msg;
+    GET_ALERT_ID: function GET_ALERT_ID(state) {
+      return state.CLICK_COUNTER;
+    },
+    idIsStillTheSame: function idIsStillTheSame(getters, payload) {
+      return getters.GET_ALERT_ID == payload;
     }
   },
   mutations: {
-    showMsg: function showMsg(state, payload) {
-      state.msg.text = payload.text;
-
-      if (payload.type == null || payload.type == undefined) {
-        state.msg.type = 'primary';
-      } else {
-        state.msg.type = payload.type;
-      }
-
-      state.msg.show = true;
+    HIDE_ALERT: function HIDE_ALERT(state) {
+      state.SHOW = false;
     },
-    hideMsg: function hideMsg(state) {
-      state.msg.show = false;
+    SHOW_ALERT: function SHOW_ALERT(state) {
+      state.SHOW = true;
+    },
+    NEW_ALERT_ID: function NEW_ALERT_ID(state) {
+      state.ALERT_ID++;
+    },
+    SET_TEXT: function SET_TEXT(state, payload) {
+      state.TEXT = payload;
+    },
+    SET_TYPE: function SET_TYPE(state, payload) {
+      state.TYPE = payload;
     }
   },
   actions: {
-    displayMsg: function displayMsg(_ref, payload) {
-      var commit = _ref.commit,
-          state = _ref.state;
-      state.msgDisplayCounter++;
-      var thisClick = state.msgDisplayCounter;
-      commit('showMsg', payload);
+    danger: function danger(_ref, payload) {
+      var dispatch = _ref.dispatch;
+      var specifications = {
+        type: 'danger',
+        text: payload
+      };
+      dispatch('show', specifications);
+    },
+    success: function success(_ref2, payload) {
+      var dispatch = _ref2.dispatch;
+      var specifications = {
+        type: 'success',
+        text: payload
+      };
+      dispatch('show', specifications);
+    },
+    show: function show(_ref3, specifications) {
+      var commit = _ref3.commit,
+          getters = _ref3.getters;
+
+      if (typeof specifications == 'string') {
+        specifications = {
+          type: 'primary',
+          text: specifications
+        };
+      }
+
+      commit('SET_TEXT', specifications.text);
+      commit('SET_TYPE', specifications.type);
+      commit('SHOW_ALERT');
+      commit('NEW_ALERT_ID');
+      var id_thisAlertBox = getters.GET_ALERT_ID;
       setTimeout(function () {
-        if (state.msgDisplayCounter == thisClick) {
-          commit('hideMsg');
+        if (id_thisAlertBox === getters.GET_ALERT_ID) {
+          commit('HIDE_ALERT');
         }
       }, 2000);
     }

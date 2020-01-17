@@ -1,14 +1,15 @@
 <template>
    <div>       
         
-        <app-loader v-show="!foundRoute" ></app-loader>        
+        <app-loader v-show="!hasRouteLoaded" ></app-loader> 
+        
 
-        <div class='row'>    
+        <div class='row'>                
+           <transition name="fade"  mode="out-in">  
+
+           
             
-           <transition name="fade"  mode="out-in"> 
-            
-            
-            <div  v-if="stap == 0" key="stap0" class="col-12 stapBlock">
+            <div  v-if="subPagePosition == 0" key="stap0" class="col-12 stapBlock">
                     
                     <div class="form-group">
                         <label for="Naam">Naam van de route?</label>
@@ -36,7 +37,7 @@
                             <label for="exampleFormControlTextarea1">Informatie</label>
                             <textarea v-model="edit.informatie" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                     </div>     
-                    <button type="button" @click="nextStep" class="btn btn-success">Verder</button>
+                    <button type="button" @click="nextSubPage" class="btn btn-success">Verder</button>
                 </div>
 
 
@@ -44,25 +45,31 @@
 
 
                      
-                <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="stap == 1" key="stap1"> 
+                <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="subPagePosition == 1" key="stap1"> 
                     
                     <ul class="list-group">
                             <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
 
                             <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delPatroonItem(index)" style="float:right">x</button>
-                            <label class='pt-2' for="naam2">
+                            <label class='pt-2' :for="'naam'+index">
                                 Punt {{index+1}} : 
                                 {{ onderdeel.coordinaten[0].toFixed(2)}}
                                 ,
                                 {{ onderdeel.coordinaten[1].toFixed(2)}}
                             </label>
-                            <input  v-model="onderdeel.naam" type="text" class="form-control" id="naam2" aria-describedby="naam2" placeholder="Vul naam in.">
+                            <input  v-model="onderdeel.naam" type="text" class="form-control" :id="'naam'+index" aria-describedby="naam2" placeholder="Vul naam in.">
                             
                         </li>                            
                     </ul> 
-                    <button :class="'btn btn-success mt-3'" @click="prevStep">Terug</button> 
-                    <button :disabled="edit.mapClick" :class="'btn btn-'+[edit.mapClick ? 'inverse' : 'primary' ]+' mt-3'" @click="puntToevoegenButton">{{edit.mapClick ? 'klik op map':'Punt toevoegen'}}</button>     
-                    <button :class="'btn btn-success mt-3'" @click="nextStep">Verder</button>                                  
+                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                    <button 
+                        :disabled="this.mapClickEnabled"
+                        :class="'btn btn-'+[this.mapClickEnabled ? 'inverse' : 'primary' ]+' mt-3'"
+                        @click="puntToevoegenButton"
+                    >                        
+                        {{this.mapClickEnabled ? 'klik op map':'Punt toevoegen'}}                    
+                    </button>     
+                    <button :class="'btn btn-success mt-3'" @click="nextSubPage">Verder</button>                                  
                 
                 </div>
 
@@ -72,7 +79,7 @@
                         
 
                    
-                <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="stap == 2" key="stap2">                     
+                <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="subPagePosition == 2" key="stap2">                     
                     
 
                     <ul class="list-group">
@@ -84,7 +91,7 @@
                             </div> 
                         </li> 
                     </ul>                   
-                    <button :class="'btn btn-success mt-3'" @click="prevStep">Terug</button> 
+                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
                     <button :class="'btn btn-primary mt-3'" @click="SaveRoute">Klaar</button> 
                 </div>
 
@@ -95,17 +102,17 @@
 
           
             <transition name="fade-map"  mode="out-in"> 
-                <div :class="'col-'+mapsize[1]" v-if="stap != 0">
+                <div :class="'col-'+mapsize[1]" v-if="subPagePosition != 0">
 
                     <div class='sticky-top' >
                         
                         <div class='block' style='height:50px;'></div>
 
                         
-                        <leafletMap v-model="clickOnMap" :view="getBounds" >                            
+                        <leafletMap v-model="clickOnMap" :view="getMapBoundaries" >                            
                             <leafletMapMarkers :markers="edit.patroon" >                                
                             </leafletMapMarkers>
-                            <leafletMapLines :lines="getPatroonLine" />
+                            <leafletMapLines :lines="getMapLines" />
                         </leafletMap> 
                         
                         
@@ -123,108 +130,131 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-
 import appMapSizer from '../../layout/mapSizer'
 import appLoader from '../../mechanism/loader'
 import leafletMap from '../../map/leafletMap'
 import leafletMapMarkers from '../../map/parts/markers'
 import leafletMapLines from '../../map/parts/lines'
 
+
 export default {
     components:{     
         appMapSizer,
         appLoader,
-
-        //map
         leafletMap,
         leafletMapMarkers,
         leafletMapLines,        
     },
-    data(){return{        
+
+    data(){ return{    
+        subPagePosition:0,
+        mapClickEnabled:false,
         punt_toevoegen_button: false,
-        mapsize:[6,6],
-        clickOnMap:''     
+        mapsize:[6,6],        
+        clickOnMap:'',           
     }},
+
     watch :{
         clickOnMap: function(coordinaten){
-            this.$store.commit('route/edit/AddPatroon', coordinaten ) 
+            if(this.mapClickEnabled){
+                this.$store.dispatch('route/edit/newCoordinates', coordinaten ) 
+            }
+            this.mapClickEnabled = false;
+        
         }
     },
-    methods:{        
-        SaveRoute(){
-            this.$store.dispatch('route/edit/Edit', this.$route.params.naam);
-        },
-        puntToevoegenButton(){
-            this.$store.commit('route/edit/mapClickButton');
-        },
-        stapEdit(i){            
-            this.$store.commit('route/edit/stapEdit',i);    
-        },
-        nextStep(){
-            switch(this.stap){
-                case 0:
-                    if(this.$store.state.route.edit.naam.length < 7){
-                        this.$store.dispatch('displayMsg',{text:'De naam is kleiner dan 7 tekens.',type:'danger'})
-                        return;
-                    }
-                    if(this.$store.state.route.edit.land == ''){
-                        this.$store.dispatch('displayMsg',{text:'Geen land gekozen',type:'danger'})
-                        return;
-                    }
-                    if(this.$store.state.route.edit.vervoer == ''){
-                        this.$store.dispatch('displayMsg',{text:'Geen vervoer gekozen.',type:'danger'})
-                        return;
-                    }
-                    break;
 
+    methods:{  
+
+        setsubPagePosition(i){            
+            this.subPagePosition = i    
+        },        
+
+        puntToevoegenButton(){
+            this.mapClickEnabled = !this.mapClickEnabled;            
+        },        
+
+        nextSubPage(){
+            var route = this.$store.state.route.edit;            
+            switch(this.subPagePosition){
+                case 0:
+                    if( this.lengthSmallerThen(route.naam, 7) ){
+                        this.dispatch('alert/danger', 'De naam is kleiner dan 7 tekens.' );
+                        return;
+                    } 
+                    if(  this.emptyString(route.land)  ){
+                        this.dispatch('alert/danger','Geen land gekozen');
+                        return;
+                    }
+                    if( this.emptyString(route.vervoer) ){
+                        this.dispatch('alert/danger','Geen vervoer gekozen.');
+
+                        return;
+                    }
+                    break;                    
                 case 1:                        
-                    for (let index = 0; index < this.$store.state.route.edit.patroon.length; index++) {
-                        if(this.$store.state.route.edit.patroon[index].naam == ""){
-                            this.$store.dispatch('displayMsg',{text:'Een naam is niet ingevuld.',type:'danger'})
+                    for (let index in route.patroon) {
+                        if( this.emptyString(route.patroon[index].naam)){
+                            this.dispatch('alert/danger','Een naam is niet ingevuld.');
+                            
                             return;
                         }                        
                     }
-                    if(this.$store.state.route.edit.patroon.length < 2){
-                        this.$store.dispatch('displayMsg',{text:'Er is geen route',type:'danger'})
+                    if( this.lengthSmallerThen(route.patroon, 2)  ){
+                        this.dispatch('alert/danger','Er is geen route');
                         return;
                     }
                     break;
-            }
-            
-            this.stapEdit(this.stap+1);
+            }            
+            this.setsubPagePosition( this.subPagePosition+1 );
         },
 
-        prevStep(){
-            this.stapEdit(this.stap-1);            
+        previousStepSubPage(){
+            this.setsubPagePosition( this.subPagePosition-1 );            
         },              
        
         delPatroonItem(index){
-            this.$store.commit('route/edit/DelPatroon',index);
-            this.$store.dispatch('displayMsg',{text:'Een punt is verwijderd.',type:'success'})
+            this.$store.dispatch('route/edit/removeCoordinate',index);
+            this.$store.dispatch('alert/success','Een punt is verwijderd.')
+        },        
+
+        SaveRoute(){ 
+            this.dispatch('route/edit/save', this.$route.params.naam)
+        },
+
+
+
+        //operating Functions
+        dispatch(route,parameter){
+            this.$store.dispatch(route,parameter,{root:true});
+        },
+        emptyString(string){
+            return (string == '');
+        },
+        lengthSmallerThen(string,number){
+            return (string.length < number);            
         }
+        //end operating functions
     },
 
-    computed:{    
 
-        stap(){             
-            return this.$store.state.route.edit.stap ;
-        },    
 
+    computed:{   
         ...mapState({
             edit : state => state.route.edit,
             details : state => state.route.details
         }),
 
-        ...mapGetters('route/edit',['getGegevens','foundRoute','getPatroonLine','getBounds']),        
-        
-       
-
-
-            
+        ...mapGetters({            
+            hasRouteLoaded: 'route/edit/hasRouteLoaded',
+            getMapLines: 'route/edit/mapLines/GET_MAP_LINES',
+            getMapBoundaries: 'route/edit/mapBoundaries/GET_MAP_BOUNDARIES',
+        }),          
+                   
     },
 
     created(){           
-        this.$store.dispatch('route/edit/getEditGegevens', this.$route.params.naam );          
+        this.$store.dispatch('route/edit/load', this.$route.params.naam );          
     },   
 }
 </script>

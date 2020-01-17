@@ -10,7 +10,7 @@
         <app-alert></app-alert>         
 
         <!--redirect mechanisme -->        
-        <app-redirecter></app-redirecter>
+        <redirecter></redirecter>
 
         <!--main content-->    
         <transition name="fade"  mode="out-in">
@@ -25,15 +25,20 @@
 <script>
 import HeaderComponent from './components/layout/header'
 import AlertComponent from './components/layout/alert'
-import Redirecter from './components/mechanism/redirecter'
+import redirecter from './components/mechanism/redirecter'
 
-export default {
-     
+export default {     
 
     components: {
         appHeader : HeaderComponent, 
         appAlert: AlertComponent,
-        appRedirecter: Redirecter           
+        redirecter       
+    },
+
+    methods: {
+        dispatch( route, payload ) {
+            this.$store.dispatch(route, payload, {root:true} );
+        }
     },
     
     created(){        

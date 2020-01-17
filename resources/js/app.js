@@ -7,6 +7,7 @@ import App from './App.vue';
 import { routes } from './routes';
 import { store } from './store/store'
 
+
 //main file
 Vue.component('App', App);
 Vue.use(VueAxios, axios);

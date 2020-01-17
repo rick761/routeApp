@@ -1,157 +1,119 @@
 import Vue from 'vue'
 import VueAxios from 'vue-axios';
 import axios from 'axios';
+import mapBoundaries from './calculation/mapBoundaries'
+import mapLines from './calculation/mapLines'
+
 Vue.use(VueAxios, axios)
 
 export default {    
 
     namespaced: true,
 
-    state : {
-        stap:0,
+    modules:{
+        mapBoundaries,
+        mapLines
+    },
+
+    state : {        
         land:'',
         vervoer:'',
         naam:'',
-        informatie:'',        
-        CenterCoordinates:[52.237993, 6.161133],
-        mapClick : false,
+        informatie:'',     
         patroon:[]      
     },
 
 
     getters : {
-        foundRoute(state){
-            return (state.land != '' );
-        } ,
-
-        getGegevens (state) {
-            return {
-                naam: state.naam,
-                land: state.land,
-                vervoer: state.vervoer
-            }
+        hasRouteLoaded(state){            
+            return ( state.land != '' || state.vervoer != '' || state.naam != '' );
         },
-        
-        getPatroonLine (state){
-            let returnWaarde = [];            
-            for (let index = 0; index < state.patroon.length; index++) {                
-                if( !(state.patroon[index].coordinaten[0] == 0 && state.patroon[index].coordinaten[1] == 0 ) )
-                {
-                    returnWaarde.push (state.patroon[index].coordinaten );
-                }                              
-            }            
-            return returnWaarde;
-        },
-
-        //boundary of map
-        getBounds(state){
-            let default_val = [[49.515,0.5761693],[54.477130,10.4638]]; //nederland
-
-            let lat_max = 0;
-            let lng_max = 0;
-            let lat_min = 9999999;
-            let lng_min = 9999999;
-
-            let patroon = state.patroon;
-            if(patroon != undefined){
-
-                for (let index = 0; index < patroon.length; index++) {
-
-                    let lat = patroon[index].coordinaten[0];
-                    let lng = patroon[index].coordinaten[1];
-
-                    if(lat > lat_max){ lat_max = lat; }
-                    if(lat < lat_min){ lat_min = lat; }
-                    if(lng > lng_max){ lng_max = lng; }
-                    if(lng < lng_min){ lng_min = lng; }   
-                    
-                }
-                              
-                return [[lat_min,lng_min],[lat_max,lng_max]]; //bounds
-            }
-            return default_val; //nl kaart
-        }           
     },
-
-
-
-    mutations : {
-        SetCenter: (state,payload) => {     
-            state.CenterCoordinates = payload;
+    mutations : {     
+        ADD_ROUTE_COORDINATES(state,coordinate){
+            var coordinateObject = {
+                naam:'',
+                coordinaten: [
+                    coordinate.lat,
+                    coordinate.lng
+                ]
+            }
+            state.patroon.push(coordinateObject)
+            console.log('ADD_ROUTE_COORDINATES');
         },
-        stapEdit : (state,payload) => {
-          state.stap = payload;            
-        },
-        AddPatroon  : (state,payload) => {   
-            if(state.mapClick){
-                state.patroon.push( { naam:'', coordinaten: [payload.lat,payload.lng] } )  ;  // last item           
-                state.mapClick = false;
-            }            
-        },
-        mapClickButton(state){
-            state.mapClick = ! state.mapClick;
-        },
-        DelPatroon : (state,payload) => {   
+        DELETE_ROUTE_COORDINATES(state,payload){
             state.patroon.splice(payload,1);
+            console.log('DELETE_ROUTE_COORDINATES');
         },
-        
+        RESET_ROUTE(state){
+            state.stap = 0;
+            state.informatie = '';
+            state.land = '';
+            state.naam = '';
+            state.vervoer = '';
+            state.patroon = [];
+            console.log('RESET_ROUTE');
+        },
+        SET_ROUTE(state,route){
+            state.informatie = route.informatie;
+            state.land = route.land;
+            state.naam = route.naam;
+            state.vervoer = route.vervoer;
+            state.patroon = JSON.parse(route.patroon);  
+
+            console.log('SET_ROUTE');
+        }
     },
-
-
     actions : {
-        Edit({state,dispatch},payload){
-            //data
-            let toSend = {}
-            toSend.informatie = state.informatie;
-            toSend.land = state.land;
-            toSend.naam = state.naam;
-            toSend.vervoer = state.vervoer;
-            toSend.patroon = state.patroon;
+
+        newCoordinates({state,commit,dispatch},coordinate){
+            commit('ADD_ROUTE_COORDINATES', coordinate );
+            dispatch('mapBoundaries/createMapBoundaries', state.patroon );
+            dispatch('mapLines/createMapLines', state.patroon  );            
+        },
+
+        removeCoordinate({commit,dispatch,state},index){
+            console.log(index);
+            commit('DELETE_ROUTE_COORDINATES', index );
+            dispatch('mapBoundaries/createMapBoundaries', state.patroon );
+            dispatch('mapLines/createMapLines', state.patroon  );   
+        },
+
+        save({state,dispatch,commit}, naam){            
+            let postObj = {
+                toEdit: naam ,
+                toSend: {
+                    informatie: state.informatie,
+                    land:       state.land,
+                    naam:       state.naam,
+                    vervoer:    state.vervoer,
+                    patroon:    state.patroon
+                }
+            };        
 
            //apiCall
-            axios
-            .post(window.location.origin+'/api/route/edit/save', {toEdit: payload, toSend})
-            .then(response => {               
-                if(response.data == "error")   
-                {                    
-                    dispatch('displayMsg',{text:'Er is iets fout gegaan.',type:'danger'},{root:true} );
+            axios.post(window.location.origin+'/api/route/edit/save', postObj).then(response => {               
+                if(response.data == "error"){                    
+                    dispatch('alert/danger','Er is iets fout gegaan.',{root:true} );                    
                     return;
-
-                }                  
-                //msg and redirect
-                dispatch('displayMsg',{text:'Route is aangepast.',type:'success'}, {root:true} );
+                }                                             
+                dispatch('alert/success','Route is aangepast.',{root:true} );
                 dispatch('redirecter/redirect','/Mijn', {root:true} );
-                dispatch('route/reloadMyRoutes','', {root:true} );                
-
-                //reset
-                state.stap = 0;
-                state.informatie = '';
-                state.land = '';
-                state.naam = '';
-                state.vervoer = '';
-                state.patroon = [];
-
-             })
-             
+                dispatch('route/reloadMyRoutes','', {root:true} );        
+                commit('RESET_ROUTE');   
+             })             
             
         },
 
-        getEditGegevens({state,dispatch},payload){            
-            //api call
-            axios
-            .post(window.location.origin+'/api/route/edit/load', {naam: payload})
-            .then(response => {
-                
-                if(typeof response.data == 'object'){                    
-                    state.stap = 0;
-                    state.informatie = response.data.informatie;
-                    state.land = response.data.land;
-                    state.naam = response.data.naam;
-                    state.vervoer = response.data.vervoer;
-                    state.patroon = JSON.parse(response.data.patroon);                    
-
+        load({dispatch,commit}, payload){   
+            axios.post(window.location.origin+'/api/route/edit/load', {naam: payload}).then(response => {                
+                if(typeof response.data == 'object'){
+                    commit("SET_ROUTE", response.data);
+                    var routeCoordinates = JSON.parse(response.data.patroon);
+                    dispatch('mapBoundaries/createMapBoundaries', routeCoordinates );
+                    dispatch('mapLines/createMapLines', routeCoordinates );
                 } else {
-                    dispatch( 'displayMsg', { text:'Error bij het laden',type:'danger' }, {root:true});
+                    dispatch( 'alert/danger','Error bij het laden', {root:true});
                 }
             });
         }

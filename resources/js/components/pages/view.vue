@@ -21,12 +21,10 @@
             <div :class="'col-'+mapsize[1]" v-if="!isLoaded">
                 <div class="sticky-top">
                     
-                    <!--filler-->
-                     
-                    <div class='block' style='height:50px;'></div>
+                    <!--filler-->                 
+                    <div class='block' style='height:50px;'></div>                    
                     
-                    <!--leafletMap-->
-                    
+                    <!--leafletMap-->      
                     <leafletMap :view="getMapBoundaries">                            
                         <leafletMapMarkers :open="true" :markers="view.route.patroon" >                                
                         </leafletMapMarkers>
@@ -68,9 +66,10 @@ export default {
             view : state => state.route.view
         }),        
         ...mapGetters({
-            getMapBoundaries: 'route/view/getMapBoundaries',
-            getMapLines: 'route/view/getMapLines',
+            getMapBoundaries: 'route/view/mapBoundaries/GET_MAP_BOUNDARIES',            
+            getMapLines: 'route/view/mapLines/GET_MAP_LINES',
         }),        
+        
         isLoaded(){            
             return !(this.$store.state.route.view.route.naam != undefined);
         }
