@@ -3177,12 +3177,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.ClickDelete_name = payload;
     },
     delItem: function delItem(payload) {
-      this.$store.dispatch('route/delItem', payload);
+      this.$store.dispatch('route/my/delete', payload);
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])(['route'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
+    route: function route(state) {
+      return state.route.my;
+    }
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])({
+    getDistances: 'route/my/coordinateDistance/GET_DISTANCES'
+  })),
   created: function created() {
-    this.$store.dispatch('route/fetchRoutes', 'Mijn');
+    this.$store.dispatch('route/my/load');
   }
 });
 
@@ -19874,7 +19880,6 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _vm._v("        \n     " + _vm._s(_vm.getDistances) + "\n    "),
     _c("div", { staticClass: "row" }, [
       _c(
         "div",
@@ -21118,7 +21123,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "tbody",
-        _vm._l(_vm.route.myRoutes, function(routeItem, index) {
+        _vm._l(_vm.route.ROUTES, function(routeItem, index) {
           return _c("tr", { key: index }, [
             _c(
               "th",
@@ -21160,7 +21165,7 @@ var render = function() {
             _vm._v(" "),
             _c("td", [_vm._v(_vm._s(routeItem.vervoer))]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(routeItem.afstandKm) + " km")]),
+            _c("td", [_vm._v(_vm._s(_vm.getDistances[index]) + " km")]),
             _vm._v(" "),
             _c("td")
           ])
@@ -50129,16 +50134,22 @@ __webpack_require__.r(__webpack_exports__);
     },
     DISTANCES_FORMAT_FIX: function DISTANCES_FORMAT_FIX(state) {
       for (var i in state.MULTIPLE_DISTANCES) {
-        state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES.toFixed(3);
+        //convert to 3 behind comma (also switched '.' to ',')               
+        state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES[i].toFixed(3).toString().replace(".", ",");
       }
 
       console.log('DISTANCES_FORMAT_FIX');
+    },
+    DELETE_DISTANCES: function DELETE_DISTANCES(state) {
+      state.MULTIPLE_DISTANCES = [];
     }
   },
   actions: {
     calculateMultipleRoutes: function calculateMultipleRoutes(_ref, routes) {
-      var dispatch = _ref.dispatch;
+      var dispatch = _ref.dispatch,
+          commit = _ref.commit;
       var filteredRoutes = [];
+      commit('DELETE_DISTANCES');
 
       for (var index in routes) {
         filteredRoutes.push(routes[index].patroon);
@@ -50645,103 +50656,61 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-axios */ "./node_modules/vue-axios/dist/vue-axios.min.js");
+/* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _calculation_coordinateDistance__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculation/coordinateDistance */ "./resources/js/store/module/route/calculation/coordinateDistance.js");
+
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
-  state: {
-    routes: []
+  modules: {
+    coordinateDistance: _calculation_coordinateDistance__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
-  getters: {},
-  mutations: {},
-  actions: {
-    reloadMyRoutes: function reloadMyRoutes(_ref, payload) {
-      var state = _ref.state,
-          dispatch = _ref.dispatch;
-      axios.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
-        state.myRoutes = response.data;
-        dispatch('setRouteDist', 'myRoutes');
-      });
+  state: {
+    ROUTES: []
+  },
+  mutations: {
+    SET_ROUTES: function SET_ROUTES(state, payload) {
+      state.ROUTES = payload;
+      console.log('SET_ROUTES');
     },
-    delItem: function delItem(_ref2, payload) {
-      var dispatch = _ref2.dispatch;
-      axios.post(window.location.origin + '/api/route/del', {
+    ROUTE_COORDINATES_PARSE_JSON: function ROUTE_COORDINATES_PARSE_JSON(state) {
+      for (var index in state.ROUTES) {
+        state.ROUTES[index].patroon = JSON.parse(state.ROUTES[index].patroon);
+      }
+
+      console.log('ROUTE_COORDINATES_PARSE_JSON');
+    }
+  },
+  actions: {
+    "delete": function _delete(_ref, payload) {
+      var dispatch = _ref.dispatch;
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(window.location.origin + '/api/route/del', {
         naam: payload
       }).then(function (response) {
-        if (response.data) {
-          dispatch('displayMsg', {
-            text: 'Er is een route verwijderd',
-            type: 'success'
-          }, {
-            root: true
-          });
-        } else {
-          dispatch('displayMsg', {
-            text: 'Er is iets fout gegaan',
-            type: 'warning'
-          }, {
-            root: true
-          });
-        }
-
-        dispatch('fetchRoutes', 'Mijn');
+        if (response.data) dispatch('alert/success', 'Er is een route verwijderd', {
+          root: true
+        });
+        if (!response.data) dispatch('alert/danger', 'Er is iets fout gegaan', {
+          root: true
+        });
+        dispatch('load');
       });
     },
-    fetchRoutes: function fetchRoutes(_ref3, payload) {
-      var state = _ref3.state,
-          dispatch = _ref3.dispatch;
-
-      if (payload == 'Mijn') {
-        if (state.myRoutes.length == 0) {
-          axios.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
-            state.myRoutes = response.data;
-            dispatch('setRouteDist', 'myRoutes');
-            console.log('mic check');
-          });
-        }
-      }
-    },
-    setRouteDist: function setRouteDist(_ref4, payload) {
-      var state = _ref4.state;
-      var routes; //which page? initiating
-
-      if (payload == 'myRoutes') {
-        routes = state.myRoutes;
-      } else {
-        routes = state.routes;
-      } //voor elke route    
-
-
-      routes.forEach(function (route, index) {
-        var kilometers = 0;
-        var last_coordinaten = [];
-        var routePatroon = JSON.parse(route.patroon);
-        routePatroon.forEach(function (routeLocatie) {
-          var coordinaten = routeLocatie.coordinaten; // if last coordinates are set
-
-          if (last_coordinaten.length != 0) {
-            //calc difference between last and this
-            var diff_lat = Math.abs(coordinaten[0] - last_coordinaten[0]);
-            var diff_lng = Math.abs(coordinaten[1] - last_coordinaten[1]); //difference to km
-
-            diff_lat = Math.abs(diff_lat * 110.57);
-            diff_lng = Math.abs(diff_lng * (111.320 * Math.cos(coordinaten[0]))); //pythagoras dist
-
-            diff_lat = Math.pow(diff_lat, 2); //km squared
-
-            diff_lng = Math.pow(diff_lng, 2); //km squared                       
-
-            var afstand = Math.sqrt(diff_lat + diff_lng);
-            kilometers += afstand;
-          } //set last to this, for the next loop 
-
-
-          last_coordinaten = coordinaten;
-        }); //which page? save stuff
-
-        if (payload == 'myRoutes') {
-          state.myRoutes[index].afstandKm = kilometers.toFixed(3);
-        } else {
-          state.routes[index].afstandKm = kilometers.toFixed(3);
-        }
+    load: function load(_ref2) {
+      var state = _ref2.state,
+          commit = _ref2.commit,
+          dispatch = _ref2.dispatch;
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
+        commit('SET_ROUTES', response.data);
+        commit('ROUTE_COORDINATES_PARSE_JSON');
+        dispatch('coordinateDistance/calculateMultipleRoutes', state.ROUTES);
       });
     }
   }

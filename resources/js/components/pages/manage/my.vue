@@ -36,7 +36,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(routeItem, index) in route.myRoutes" :key="index">
+                <tr v-for="(routeItem, index) in route.ROUTES" :key="index">
                     <th scope="row">
                         <router-link :to="'/edit/'+routeItem.naam">
                         <button class="btn btn-outline-primary">
@@ -54,7 +54,7 @@
                     <td>{{routeItem.naam}}</td>
                     <td>{{routeItem.land}}</td>
                     <td>{{routeItem.vervoer}}</td>
-                    <td>{{routeItem.afstandKm}} km</td>
+                    <td>{{getDistances[index]}} km</td>
                     <td></td> 
                 </tr>          
             </tbody>
@@ -66,7 +66,7 @@
 </template>
 <script>
 import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {    
     data(){return{
@@ -78,15 +78,20 @@ export default {
             this.ClickDelete_name = payload;
         },
         delItem(payload){
-            this.$store.dispatch('route/delItem', payload );
+            this.$store.dispatch('route/my/delete', payload );
         }
     },
     computed:{
-        ...mapState(['route'])
+        ...mapState({
+            route : state => state.route.my
+        }),
+        ...mapGetters({
+            getDistances : 'route/my/coordinateDistance/GET_DISTANCES'            
+        })
     },
 
     created(){        
-        this.$store.dispatch('route/fetchRoutes', 'Mijn' );
+        this.$store.dispatch( 'route/my/load' );
     },
     
     

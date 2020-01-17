@@ -16,23 +16,26 @@ export default {
            console.log('ADD_DISTANCE_TO_DISTANCES');
         },
         DISTANCES_FORMAT_FIX(state){
-            for(var i in state.MULTIPLE_DISTANCES){
-                state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES.toFixed(3);
+            for(var i in state.MULTIPLE_DISTANCES){ 
+                //convert to 3 behind comma (also switched '.' to ',')               
+                state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES[i].toFixed(3).toString().replace(".", ",");
             }
             console.log('DISTANCES_FORMAT_FIX');
+        },
+        DELETE_DISTANCES(state){
+            state.MULTIPLE_DISTANCES=[];
         }
     },
 
     actions : {
-        calculateMultipleRoutes({dispatch},routes){
+        calculateMultipleRoutes({dispatch,commit},routes){
             var filteredRoutes = [];
 
+            commit('DELETE_DISTANCES');   
             for (var index in routes) 
                 filteredRoutes.push( routes[index].patroon);
-
             for(var index in filteredRoutes)
                 dispatch('calculateRouteFromRoutes', filteredRoutes[index]);
-
             commit('DISTANCES_FORMAT_FIX')
         },
 

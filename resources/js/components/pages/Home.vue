@@ -1,6 +1,6 @@
 <template>
     <div>        
-         {{getDistances}}
+         
         <div class="row">
 
             <div class="" :class="'col-'+mapsize[0]">
@@ -62,7 +62,7 @@ import leafletMapLines from "../map/parts/lines";
 
 export default {
     data(){ return{
-        mapsize:[6,6],
+        mapsize:[ 6,6 ],
         selected:{}
     }},
     methods:{
