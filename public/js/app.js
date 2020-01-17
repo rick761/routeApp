@@ -1874,13 +1874,6 @@ __webpack_require__.r(__webpack_exports__);
     appAlert: _components_layout_alert__WEBPACK_IMPORTED_MODULE_1__["default"],
     redirecter: _components_mechanism_redirecter__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  methods: {
-    dispatch: function dispatch(route, payload) {
-      this.$store.dispatch(route, payload, {
-        root: true
-      });
-    }
-  },
   created: function created() {
     this.$store.dispatch('fetchAuthAtStartup');
   }
@@ -2168,10 +2161,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('filterAndNav', ['totalPages', 'currentPage'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('paginate', ['totalPages', 'currentPage'])),
   methods: {
     changePage: function changePage(pageNr) {
-      this.$store.dispatch('filterAndNav/changePageNr', pageNr);
+      this.$store.dispatch('paginate/changePageNr', pageNr);
     },
     toonPaginationNumber: function toonPaginationNumber(index, currentPage) {
       if (currentPage + 3 < index) {
@@ -2184,12 +2177,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   watch: {
-    currentPage: function currentPage(to, from) {
-      this.$store.dispatch('filterAndNav/changePage');
+    currentPage: function currentPage() {
+      this.$store.dispatch('route/load');
     }
   },
   created: function created() {
-    this.$store.dispatch('filterAndNav/getPages');
+    this.$store.dispatch('paginate/getPages');
   }
 });
 
@@ -2485,6 +2478,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
  //map
@@ -2500,11 +2494,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: {
-    selectedRoute: function selectedRoute(route) {
-      this.$store.dispatch('route/hoveredRoute', route);
+    hoverOverRoute: function hoverOverRoute(index) {
+      this.$store.dispatch('route/hoverOverRoute', index);
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['route']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('route', ['hoveredRoute']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('route', ['getMapLine', 'getBounds'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
+    route: function route(state) {
+      return state.route;
+    }
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
+    getMapLines: 'route/mapLines/GET_MAP_LINES',
+    getMapBoundaries: 'route/mapBoundaries/GET_MAP_BOUNDARIES',
+    getDistances: 'route/coordinateDistance/GET_DISTANCES'
+  })),
   components: {
     appMapSizer: _layout_mapSizer__WEBPACK_IMPORTED_MODULE_1__["default"],
     appNavigator: _layout_navigatorHomePage__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -2513,7 +2515,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     leafletMapLines: _map_parts_lines__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   created: function created() {
-    this.$store.dispatch('route/fetchRoutes', 'Home');
+    this.$store.dispatch('route/load');
   }
 });
 
@@ -3297,7 +3299,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** global CSS */\nh1{\n    margin-bottom:40px;\n}\n.leaflet-control-attribution a, .leaflet-control-zoom {\n    display:none;\n}\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** global CSS */\nh1{\n    margin-bottom:40px;\n}\n.leaflet-control-attribution a, .leaflet-control-zoom {\n    display:none;\n}\n", ""]);
 
 // exports
 
@@ -19872,6 +19874,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _vm._v("        \n     " + _vm._s(_vm.getDistances) + "\n    "),
     _c("div", { staticClass: "row" }, [
       _c(
         "div",
@@ -19882,7 +19885,7 @@ var render = function() {
           _c("table", { staticClass: "table" }, [
             _c(
               "tbody",
-              _vm._l(_vm.route.routes, function(routeItem, index) {
+              _vm._l(_vm.route.ROUTES, function(routeItem, index) {
                 return _c(
                   "router-link",
                   {
@@ -19895,7 +19898,7 @@ var render = function() {
                       {
                         on: {
                           mouseover: function($event) {
-                            return _vm.selectedRoute(routeItem)
+                            return _vm.hoverOverRoute(index)
                           }
                         }
                       },
@@ -19920,11 +19923,18 @@ var render = function() {
                         ),
                         _vm._v(" "),
                         _c("span", { staticStyle: { display: "block" } }, [
-                          _c("i", [
-                            _vm._v(" - " + _vm._s(routeItem.afstandKm) + " km ")
-                          ]),
+                          _vm._v("\n                                 - "),
+                          _vm.getDistances[index]
+                            ? _c("i", [
+                                _vm._v(
+                                  "  " +
+                                    _vm._s(_vm.getDistances[index]) +
+                                    " km "
+                                )
+                              ])
+                            : _vm._e(),
                           _vm._v(
-                            "(" +
+                            "\n                                      (" +
                               _vm._s(routeItem.land) +
                               ", " +
                               _vm._s(routeItem.vervoer) +
@@ -19955,13 +19965,13 @@ var render = function() {
             _vm._v(" "),
             _c(
               "leafletMap",
-              { attrs: { view: _vm.getBounds } },
+              { attrs: { view: _vm.getMapBoundaries } },
               [
                 _c("leafletMapMarkers", {
-                  attrs: { markers: _vm.hoveredRoute.patroon }
+                  attrs: { markers: _vm.route.SHOWN_ROUTE.patroon }
                 }),
                 _vm._v(" "),
-                _c("leafletMapLines", { attrs: { lines: _vm.getMapLine } })
+                _c("leafletMapLines", { attrs: { lines: _vm.getMapLines } })
               ],
               1
             ),
@@ -50007,9 +50017,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _route_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./route/view */ "./resources/js/store/module/route/view.js");
 /* harmony import */ var _route_create__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./route/create */ "./resources/js/store/module/route/create.js");
 /* harmony import */ var _route_details__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./route/details */ "./resources/js/store/module/route/details.js");
+/* harmony import */ var _route_my__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./route/my */ "./resources/js/store/module/route/my.js");
+/* harmony import */ var _route_calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./route/calculation/mapBoundaries */ "./resources/js/store/module/route/calculation/mapBoundaries.js");
+/* harmony import */ var _route_calculation_mapLines__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./route/calculation/mapLines */ "./resources/js/store/module/route/calculation/mapLines.js");
+/* harmony import */ var _route_calculation_coordinateDistance__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./route/calculation/coordinateDistance */ "./resources/js/store/module/route/calculation/coordinateDistance.js");
 
 
  //children
+
+
+
+
 
 
 
@@ -50022,184 +50040,148 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
     edit: _route_edit__WEBPACK_IMPORTED_MODULE_3__["default"],
     view: _route_view__WEBPACK_IMPORTED_MODULE_4__["default"],
     create: _route_create__WEBPACK_IMPORTED_MODULE_5__["default"],
-    details: _route_details__WEBPACK_IMPORTED_MODULE_6__["default"]
+    details: _route_details__WEBPACK_IMPORTED_MODULE_6__["default"],
+    my: _route_my__WEBPACK_IMPORTED_MODULE_7__["default"],
+    //calculation modules
+    mapBoundaries: _route_calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_8__["default"],
+    mapLines: _route_calculation_mapLines__WEBPACK_IMPORTED_MODULE_9__["default"],
+    coordinateDistance: _route_calculation_coordinateDistance__WEBPACK_IMPORTED_MODULE_10__["default"]
   },
   state: {
-    myRoutes: [],
-    routes: [],
-    hoveredRoute: []
+    ROUTES: [],
+    SHOWN_ROUTE: []
   },
-  getters: {
-    getMapLine: function getMapLine(state) {
-      var returnWaarde = [];
-      var patroon = state.hoveredRoute.patroon;
-
-      if (patroon != undefined) {
-        for (var index = 0; index < patroon.length; index++) {
-          if (!(patroon[index].coordinaten[0] == 0 && patroon[index].coordinaten[1] == 0)) {
-            returnWaarde.push(patroon[index].coordinaten);
-          }
-        }
-      }
-
-      return returnWaarde;
+  mutations: {
+    SET_ROUTES: function SET_ROUTES(state, payload) {
+      state.ROUTES = payload;
+      console.log('SET_ROUTES');
     },
-    getBounds: function getBounds(state) {
-      var default_val = [[49.515, 0.5761693], [54.477130, 10.4638]]; //nederland
-
-      var lat_max = 0;
-      var lng_max = 0;
-      var lat_min = 9999999;
-      var lng_min = 9999999;
-      var patroon = state.hoveredRoute.patroon;
-
-      if (patroon != undefined) {
-        for (var index = 0; index < patroon.length; index++) {
-          var lat = patroon[index].coordinaten[0];
-          var lng = patroon[index].coordinaten[1];
-
-          if (lat > lat_max) {
-            lat_max = lat;
-          }
-
-          if (lat < lat_min) {
-            lat_min = lat;
-          }
-
-          if (lng > lng_max) {
-            lng_max = lng;
-          }
-
-          if (lng < lng_min) {
-            lng_min = lng;
-          }
-        }
-
-        return [[lat_min, lng_min], [lat_max, lng_max]]; //bounds
+    SET_SHOWN_ROUTE: function SET_SHOWN_ROUTE(state, index) {
+      state.SHOWN_ROUTE = state.ROUTES[index];
+      console.log('SET_SHOWN_ROUTE');
+    },
+    ROUTE_COORDINATES_PARSE_JSON: function ROUTE_COORDINATES_PARSE_JSON(state) {
+      for (var index in state.ROUTES) {
+        state.ROUTES[index].patroon = JSON.parse(state.ROUTES[index].patroon);
       }
 
-      return default_val; //nl kaart
+      console.log('ROUTE_COORDINATES_PARSE_JSON');
     }
   },
   actions: {
     setNewRoutes: function setNewRoutes(_ref, payload) {
-      var state = _ref.state,
-          dispatch = _ref.dispatch;
-      state.routes = payload;
-      dispatch('setRouteDist', 'routes');
+      var commit = _ref.commit;
+      commit('SET_ROUTES', payload);
     },
-    reloadMyRoutes: function reloadMyRoutes(_ref2, payload) {
-      var state = _ref2.state,
-          dispatch = _ref2.dispatch;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
-        state.myRoutes = response.data;
-        dispatch('setRouteDist', 'myRoutes');
+    load: function load(_ref2) {
+      var commit = _ref2.commit,
+          dispatch = _ref2.dispatch,
+          rootState = _ref2.rootState,
+          state = _ref2.state;
+      var paginate = rootState.paginate.currentPage;
+      var url = window.location.origin + '/api/route/get?page=' + paginate;
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).then(function (response) {
+        commit('SET_ROUTES', response.data.data);
+        commit('ROUTE_COORDINATES_PARSE_JSON');
+        dispatch('coordinateDistance/calculateMultipleRoutes', state.ROUTES);
       });
     },
-    //edit delete 
-    delItem: function delItem(_ref3, payload) {
-      var dispatch = _ref3.dispatch;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(window.location.origin + '/api/route/del', {
-        naam: payload
-      }).then(function (response) {
-        if (response.data) {
-          dispatch('displayMsg', {
-            text: 'Er is een route verwijderd',
-            type: 'success'
-          }, {
-            root: true
-          });
-        } else {
-          dispatch('displayMsg', {
-            text: 'Er is iets fout gegaan',
-            type: 'warning'
-          }, {
-            root: true
-          });
+    hoverOverRoute: function hoverOverRoute(_ref3, index) {
+      var state = _ref3.state,
+          commit = _ref3.commit,
+          dispatch = _ref3.dispatch;
+
+      if (state.SHOWN_ROUTE != state.ROUTES[index]) {
+        commit('SET_SHOWN_ROUTE', index);
+        var coordinates = state.SHOWN_ROUTE.patroon;
+        dispatch('mapBoundaries/createMapBoundaries', coordinates);
+        dispatch('mapLines/createMapLines', coordinates);
+      }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/module/route/calculation/coordinateDistance.js":
+/*!***************************************************************************!*\
+  !*** ./resources/js/store/module/route/calculation/coordinateDistance.js ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    MULTIPLE_DISTANCES: []
+  },
+  getters: {
+    GET_DISTANCES: function GET_DISTANCES(state) {
+      return state.MULTIPLE_DISTANCES;
+    }
+  },
+  mutations: {
+    ADD_DISTANCE_TO_DISTANCES: function ADD_DISTANCE_TO_DISTANCES(state, distance) {
+      state.MULTIPLE_DISTANCES.push(distance);
+      console.log('ADD_DISTANCE_TO_DISTANCES');
+    },
+    DISTANCES_FORMAT_FIX: function DISTANCES_FORMAT_FIX(state) {
+      for (var i in state.MULTIPLE_DISTANCES) {
+        state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES.toFixed(3);
+      }
+
+      console.log('DISTANCES_FORMAT_FIX');
+    }
+  },
+  actions: {
+    calculateMultipleRoutes: function calculateMultipleRoutes(_ref, routes) {
+      var dispatch = _ref.dispatch;
+      var filteredRoutes = [];
+
+      for (var index in routes) {
+        filteredRoutes.push(routes[index].patroon);
+      }
+
+      for (var index in filteredRoutes) {
+        dispatch('calculateRouteFromRoutes', filteredRoutes[index]);
+      }
+
+      commit('DISTANCES_FORMAT_FIX');
+    },
+    calculateRouteFromRoutes: function calculateRouteFromRoutes(_ref2, routeCoordinateArray) {
+      var commit = _ref2.commit;
+      var previousCoordinate;
+      var distance = 0;
+      routeCoordinateArray.forEach(function (CoordinatesObject) {
+        var coordinate = {
+          latitude: CoordinatesObject.coordinaten[0],
+          longtitude: CoordinatesObject.coordinaten[1]
+        };
+
+        if (previousCoordinate) {
+          var calculateDifference = {
+            latitude: function latitude() {
+              var calculation;
+              calculation = Math.abs(coordinate.latitude - previousCoordinate.latitude);
+              calculation = Math.abs(calculation * 110.57);
+              return Math.pow(calculation, 2);
+            },
+            longtitude: function longtitude() {
+              var calculation;
+              calculation = Math.abs(coordinate.longtitude - previousCoordinate.longtitude);
+              calculation = Math.abs(calculation * (111.320 * Math.cos(coordinate.longtitude)));
+              return Math.pow(calculation, 2);
+            }
+          };
+          var result = Math.sqrt(calculateDifference.latitude() + calculateDifference.longtitude());
+          distance += result;
         }
 
-        dispatch('fetchRoutes', 'Mijn');
+        previousCoordinate = coordinate;
       });
-    },
-    //load all routes
-    fetchRoutes: function fetchRoutes(_ref4, payload) {
-      var state = _ref4.state,
-          dispatch = _ref4.dispatch;
-
-      if (payload == 'Mijn') {
-        if (state.myRoutes.length == 0) {
-          axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
-            state.myRoutes = response.data;
-            dispatch('setRouteDist', 'myRoutes');
-            console.log('mic check');
-          });
-        }
-      }
-
-      if (payload == 'Home') {
-        if (state.routes.length == 0) {
-          axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/get').then(function (response) {
-            state.routes = response.data.data;
-            console.log(state.routes);
-            dispatch('setRouteDist', 'routes');
-          });
-        }
-      }
-    },
-    //homepage hover over route 
-    hoveredRoute: function hoveredRoute(_ref5, payload) {
-      var state = _ref5.state;
-      state.hoveredRoute = payload;
-
-      if (typeof state.hoveredRoute.patroon == 'string') {
-        state.hoveredRoute.patroon = JSON.parse(state.hoveredRoute.patroon);
-      }
-    },
-    //calculate the distance of the route.
-    setRouteDist: function setRouteDist(_ref6, payload) {
-      var state = _ref6.state;
-      var routes; //which page? initiating
-
-      if (payload == 'myRoutes') {
-        routes = state.myRoutes;
-      } else {
-        routes = state.routes;
-      } //voor elke route    
-
-
-      routes.forEach(function (route, index) {
-        var kilometers = 0;
-        var last_coordinaten = [];
-        var routePatroon = JSON.parse(route.patroon);
-        routePatroon.forEach(function (routeLocatie) {
-          var coordinaten = routeLocatie.coordinaten; // if last coordinates are set
-
-          if (last_coordinaten.length != 0) {
-            //calc difference between last and this
-            var diff_lat = Math.abs(coordinaten[0] - last_coordinaten[0]);
-            var diff_lng = Math.abs(coordinaten[1] - last_coordinaten[1]); //difference to km
-
-            diff_lat = Math.abs(diff_lat * 110.57);
-            diff_lng = Math.abs(diff_lng * (111.320 * Math.cos(coordinaten[0]))); //pythagoras dist
-
-            diff_lat = Math.pow(diff_lat, 2); //km squared
-
-            diff_lng = Math.pow(diff_lng, 2); //km squared                       
-
-            var afstand = Math.sqrt(diff_lat + diff_lng);
-            kilometers += afstand;
-          } //set last to this, for the next loop 
-
-
-          last_coordinaten = coordinaten;
-        }); //which page? save stuff
-
-        if (payload == 'myRoutes') {
-          state.myRoutes[index].afstandKm = kilometers.toFixed(3);
-        } else {
-          state.routes[index].afstandKm = kilometers.toFixed(3);
-        }
-      });
+      commit('ADD_DISTANCE_TO_DISTANCES', distance);
     }
   }
 });
@@ -50295,15 +50277,15 @@ __webpack_require__.r(__webpack_exports__);
       state.MAP_LINES.push(payload);
       console.log('ADD_MAP_LINE');
     },
-    RESET_MAP_LINES: function RESET_MAP_LINES(state) {
+    REMOVE_MAP_LINES: function REMOVE_MAP_LINES(state) {
       state.MAP_LINES = [];
-      console.log('RESET_MAP_LINES');
+      console.log('REMOVE_MAP_LINES');
     }
   },
   actions: {
     createMapLines: function createMapLines(_ref, coordinates) {
       var commit = _ref.commit;
-      commit('RESET_MAP_LINES');
+      commit('REMOVE_MAP_LINES');
 
       for (var index in coordinates) {
         var latitude = coordinates[index].coordinaten[0];
@@ -50654,6 +50636,119 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 
 /***/ }),
 
+/***/ "./resources/js/store/module/route/my.js":
+/*!***********************************************!*\
+  !*** ./resources/js/store/module/route/my.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    routes: []
+  },
+  getters: {},
+  mutations: {},
+  actions: {
+    reloadMyRoutes: function reloadMyRoutes(_ref, payload) {
+      var state = _ref.state,
+          dispatch = _ref.dispatch;
+      axios.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
+        state.myRoutes = response.data;
+        dispatch('setRouteDist', 'myRoutes');
+      });
+    },
+    delItem: function delItem(_ref2, payload) {
+      var dispatch = _ref2.dispatch;
+      axios.post(window.location.origin + '/api/route/del', {
+        naam: payload
+      }).then(function (response) {
+        if (response.data) {
+          dispatch('displayMsg', {
+            text: 'Er is een route verwijderd',
+            type: 'success'
+          }, {
+            root: true
+          });
+        } else {
+          dispatch('displayMsg', {
+            text: 'Er is iets fout gegaan',
+            type: 'warning'
+          }, {
+            root: true
+          });
+        }
+
+        dispatch('fetchRoutes', 'Mijn');
+      });
+    },
+    fetchRoutes: function fetchRoutes(_ref3, payload) {
+      var state = _ref3.state,
+          dispatch = _ref3.dispatch;
+
+      if (payload == 'Mijn') {
+        if (state.myRoutes.length == 0) {
+          axios.get(window.location.origin + '/api/route/get/mijn').then(function (response) {
+            state.myRoutes = response.data;
+            dispatch('setRouteDist', 'myRoutes');
+            console.log('mic check');
+          });
+        }
+      }
+    },
+    setRouteDist: function setRouteDist(_ref4, payload) {
+      var state = _ref4.state;
+      var routes; //which page? initiating
+
+      if (payload == 'myRoutes') {
+        routes = state.myRoutes;
+      } else {
+        routes = state.routes;
+      } //voor elke route    
+
+
+      routes.forEach(function (route, index) {
+        var kilometers = 0;
+        var last_coordinaten = [];
+        var routePatroon = JSON.parse(route.patroon);
+        routePatroon.forEach(function (routeLocatie) {
+          var coordinaten = routeLocatie.coordinaten; // if last coordinates are set
+
+          if (last_coordinaten.length != 0) {
+            //calc difference between last and this
+            var diff_lat = Math.abs(coordinaten[0] - last_coordinaten[0]);
+            var diff_lng = Math.abs(coordinaten[1] - last_coordinaten[1]); //difference to km
+
+            diff_lat = Math.abs(diff_lat * 110.57);
+            diff_lng = Math.abs(diff_lng * (111.320 * Math.cos(coordinaten[0]))); //pythagoras dist
+
+            diff_lat = Math.pow(diff_lat, 2); //km squared
+
+            diff_lng = Math.pow(diff_lng, 2); //km squared                       
+
+            var afstand = Math.sqrt(diff_lat + diff_lng);
+            kilometers += afstand;
+          } //set last to this, for the next loop 
+
+
+          last_coordinaten = coordinaten;
+        }); //which page? save stuff
+
+        if (payload == 'myRoutes') {
+          state.myRoutes[index].afstandKm = kilometers.toFixed(3);
+        } else {
+          state.routes[index].afstandKm = kilometers.toFixed(3);
+        }
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/store/module/route/view.js":
 /*!*************************************************!*\
   !*** ./resources/js/store/module/route/view.js ***!
@@ -50894,10 +50989,10 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 
 /***/ }),
 
-/***/ "./resources/js/store/module/tools/filterAndNav.js":
-/*!*********************************************************!*\
-  !*** ./resources/js/store/module/tools/filterAndNav.js ***!
-  \*********************************************************/
+/***/ "./resources/js/store/module/tools/paginate.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/store/module/tools/paginate.js ***!
+  \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -50931,19 +51026,6 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
     changePageNr: function changePageNr(_ref2, payload) {
       var state = _ref2.state;
       state.currentPage = payload;
-    },
-    changePage: function changePage(_ref3) {
-      var state = _ref3.state,
-          dispatch = _ref3.dispatch;
-      console.log(state.currentPage);
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/get?page=' + state.currentPage).then(function (response) {
-        dispatch('route/setNewRoutes', response.data.data, {
-          root: true
-        });
-        dispatch('route/setRouteDist', 'routes', {
-          root: true
-        });
-      });
     }
   }
 });
@@ -51013,7 +51095,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _module_tools_alert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./module/tools/alert */ "./resources/js/store/module/tools/alert.js");
 /* harmony import */ var _module_tools_auth__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./module/tools/auth */ "./resources/js/store/module/tools/auth.js");
 /* harmony import */ var _module_tools_redirecter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./module/tools/redirecter */ "./resources/js/store/module/tools/redirecter.js");
-/* harmony import */ var _module_tools_filterAndNav__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./module/tools/filterAndNav */ "./resources/js/store/module/tools/filterAndNav.js");
+/* harmony import */ var _module_tools_paginate__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./module/tools/paginate */ "./resources/js/store/module/tools/paginate.js");
 /* harmony import */ var _module_route__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./module/route */ "./resources/js/store/module/route.js");
 
  //extra modules
@@ -51031,7 +51113,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     auth: _module_tools_auth__WEBPACK_IMPORTED_MODULE_3__["default"],
     route: _module_route__WEBPACK_IMPORTED_MODULE_6__["default"],
     redirecter: _module_tools_redirecter__WEBPACK_IMPORTED_MODULE_4__["default"],
-    filterAndNav: _module_tools_filterAndNav__WEBPACK_IMPORTED_MODULE_5__["default"]
+    paginate: _module_tools_paginate__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   actions: {}
 });

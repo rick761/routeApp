@@ -1,6 +1,6 @@
 <template>
     <div>        
-         
+         {{getDistances}}
         <div class="row">
 
             <div class="" :class="'col-'+mapsize[0]">
@@ -8,14 +8,15 @@
                 <app-navigator></app-navigator>
                 <table class="table">                  
                     <tbody>
-                        <router-link tag="tr" v-for="(routeItem, index) in route.routes" 
+                        <router-link tag="tr" v-for="(routeItem, index) in route.ROUTES" 
                             :to="'/view/'+routeItem.id" 
                             :key="index"                                                  
                         >                           
-                            <td @mouseover="selectedRoute(routeItem)"   >{{routeItem.naam}} 
+                            <td @mouseover="hoverOverRoute(index)"   >{{routeItem.naam}} 
                                 <span style="float:right; opacity:0.6; font-size:0.8em"> <i class="fa fa-eye"></i> {{routeItem.views_count}}</span>
                                 <span style='display:block' >
-                                     <i > - {{routeItem.afstandKm}} km </i>({{routeItem.land}}, {{routeItem.vervoer}})  
+                                     - <i v-if="getDistances[index]" >  {{getDistances[index]}} km </i>
+                                          ({{routeItem.land}}, {{routeItem.vervoer}})  
                                 </span> 
 
                             </td>                          
@@ -32,9 +33,9 @@
                     <div class='block' style='height:50px;'></div>
 
                     <!--leafletMap-->
-                    <leafletMap :view="getBounds" >
-                        <leafletMapMarkers :markers="hoveredRoute.patroon" />
-                        <leafletMapLines :lines="getMapLine" />
+                    <leafletMap :view="getMapBoundaries" >
+                        <leafletMapMarkers :markers="route.SHOWN_ROUTE.patroon"  /> <!---->
+                        <leafletMapLines :lines="getMapLines" />
                     </leafletMap>               
                     
                     <!--resizer-->        
@@ -65,26 +66,30 @@ export default {
         selected:{}
     }},
     methods:{
-        selectedRoute(route){   
-            this.$store.dispatch('route/hoveredRoute', route);
+        hoverOverRoute(index){   
+            this.$store.dispatch('route/hoverOverRoute', index);
         }
     },
-    computed: {
-        ...mapState(['route']),
-        ...mapState('route',['hoveredRoute']),
-        ...mapGetters('route',['getMapLine','getBounds'])
+    computed: {        
+        ...mapState({
+            route : state => state.route,
+        }),    
+        ...mapGetters({
+            getMapLines : 'route/mapLines/GET_MAP_LINES',
+            getMapBoundaries : 'route/mapBoundaries/GET_MAP_BOUNDARIES',
+            getDistances : 'route/coordinateDistance/GET_DISTANCES'
+        }),
               
     },    
     components:{        
         appMapSizer,        
         appNavigator,
-
         leafletMap,
         leafletMapMarkers,
         leafletMapLines
     },
     created(){        
-        this.$store.dispatch('route/fetchRoutes', 'Home' );
+        this.$store.dispatch('route/load');
     },
        
 };

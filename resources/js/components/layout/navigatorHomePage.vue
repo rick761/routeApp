@@ -74,11 +74,11 @@ import {mapState} from 'vuex'
 
 export default {
     computed:{
-        ...mapState('filterAndNav',['totalPages','currentPage'])
+        ...mapState('paginate',['totalPages','currentPage'])
     },
     methods:{
         changePage(pageNr){
-            this.$store.dispatch('filterAndNav/changePageNr', pageNr); 
+            this.$store.dispatch('paginate/changePageNr', pageNr); 
         },
         toonPaginationNumber(index, currentPage){  
             if((currentPage+3) < index){
@@ -91,12 +91,12 @@ export default {
         }
     },
     watch:{
-        currentPage(to,from){
-            this.$store.dispatch('filterAndNav/changePage');   
+        currentPage(){
+            this.$store.dispatch('route/load');   
         }
     },
     created(){
-        this.$store.dispatch('filterAndNav/getPages');   
+        this.$store.dispatch('paginate/getPages');   
     }
 }
 

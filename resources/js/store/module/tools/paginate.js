@@ -28,19 +28,6 @@ export default {
         changePageNr({state},payload){            
             state.currentPage = payload;
         },
-
-        changePage({state,dispatch}){            
-            console.log(state.currentPage);
-                axios
-                .get(window.location.origin+'/api/route/get?page='+state.currentPage)
-                .then(response => {                       
-                    dispatch('route/setNewRoutes', response.data.data, {root:true});
-                    dispatch('route/setRouteDist', 'routes', {root:true}); 
-                })                   
-            
-
-        }
-
     },
    
  }

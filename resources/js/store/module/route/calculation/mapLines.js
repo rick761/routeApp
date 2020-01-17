@@ -13,20 +13,16 @@ export default {
             state.MAP_LINES.push(payload);
             console.log('ADD_MAP_LINE') 
         },
-        RESET_MAP_LINES(state){
+        REMOVE_MAP_LINES(state){
             state.MAP_LINES = [];
-            console.log('RESET_MAP_LINES')             
+            console.log('REMOVE_MAP_LINES')             
         }
     },
     actions : {
         createMapLines({commit},coordinates){
+            commit('REMOVE_MAP_LINES');               
 
-            commit('RESET_MAP_LINES');   
-
-            
-
-            for (let index in coordinates) {                  
-
+            for (let index in coordinates) {  
                 var latitude = coordinates[index].coordinaten[0];  
                 var longtitude = coordinates[index].coordinaten[1];                 
 

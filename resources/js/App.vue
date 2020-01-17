@@ -33,13 +33,7 @@ export default {
         appHeader : HeaderComponent, 
         appAlert: AlertComponent,
         redirecter       
-    },
-
-    methods: {
-        dispatch( route, payload ) {
-            this.$store.dispatch(route, payload, {root:true} );
-        }
-    },
+    }, 
     
     created(){        
         this.$store.dispatch('fetchAuthAtStartup');                

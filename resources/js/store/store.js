@@ -5,7 +5,7 @@ import Vuex from 'vuex'
 import alert from './module/tools/alert'
 import auth from './module/tools/auth'
 import redirecter from './module/tools/redirecter'
-import filterAndNav from './module/tools/filterAndNav'
+import paginate from './module/tools/paginate'
 
 // modules
 import route from './module/route'
@@ -20,7 +20,7 @@ export const store = new Vuex.Store({
       auth,
       route,
       redirecter,
-      filterAndNav
+      paginate,
 
         
 
