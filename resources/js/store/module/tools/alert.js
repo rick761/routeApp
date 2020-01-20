@@ -65,11 +65,12 @@ export default {
                     text: specifications
                 }
             }
+            
             commit('SET_TEXT', specifications.text);
             commit('SET_TYPE', specifications.type);
             commit('SHOW_ALERT'); 
-
             commit('NEW_ALERT_ID');
+
             var id_thisAlertBox = getters.GET_ALERT_ID;   
             setTimeout(()=>{
                 if( id_thisAlertBox === getters.GET_ALERT_ID ){

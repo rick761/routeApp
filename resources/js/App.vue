@@ -1,20 +1,11 @@
 <template>
-    <div>
-
+    <div>       
+        <app-header/>              
+        <app-alert/>                 
+        <redirecter/>
         
-
-        <!--header-->    
-        <app-header></app-header>
-
-        <!--alert-->        
-        <app-alert></app-alert>         
-
-        <!--redirect mechanisme -->        
-        <redirecter></redirecter>
-
-        <!--main content-->    
         <transition name="fade"  mode="out-in">
-            <router-view></router-view>
+            <router-view/>
         </transition>
 
         
@@ -28,7 +19,6 @@ import AlertComponent from './components/layout/alert'
 import redirecter from './components/mechanism/redirecter'
 
 export default {     
-
     components: {
         appHeader : HeaderComponent, 
         appAlert: AlertComponent,
@@ -36,11 +26,10 @@ export default {
     }, 
     
     created(){        
-        this.$store.dispatch('fetchAuthAtStartup');                
+        this.$store.dispatch('authenticate/load');                      
     },     
 }
 </script>
-
 
 <style>
     /** global CSS */

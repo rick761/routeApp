@@ -1856,15 +1856,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -1875,7 +1866,7 @@ __webpack_require__.r(__webpack_exports__);
     redirecter: _components_mechanism_redirecter__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   created: function created() {
-    this.$store.dispatch('fetchAuthAtStartup');
+    this.$store.dispatch('authenticate/load');
   }
 });
 
@@ -1995,20 +1986,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['isLoggedIn', 'getAuthUser'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['LoginPopup', 'logOut']))
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
+    isLoggedIn: 'authenticate/isLoggedIn',
+    getAuthUser: 'authenticate/getAuthenticatedUser'
+  })),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])({
+    loginPopup: 'authenticate/loginPopup',
+    logOut: 'authenticate/logOut'
+  }))
 });
 
 /***/ }),
@@ -2072,10 +2059,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/navigatorHomePage.vue?vue&type=script&lang=js&":
-/*!***********************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/layout/navigatorHomePage.vue?vue&type=script&lang=js& ***!
-  \***********************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/paginate.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/layout/paginate.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2129,39 +2116,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('paginate', ['totalPages', 'currentPage'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
+    paginate: function paginate(state) {
+      return state.paginate;
+    },
+    currentPage: function currentPage(state) {
+      return state.paginate.CURRENT_PAGE;
+    }
+  })),
   methods: {
     changePage: function changePage(pageNr) {
       this.$store.dispatch('paginate/changePageNr', pageNr);
@@ -2213,7 +2177,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
  // VALID
 
 
@@ -2234,6 +2197,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     emitCoordinates: function emitCoordinates(event) {
+      console.log(event);
       this.$emit('input', {
         lat: event.latlng.lat % 90,
         lng: event.latlng.lng % 180
@@ -2353,7 +2317,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   watch: {
     mustRedirect: function mustRedirect(next, prev) {
       if (next && !prev) {
-        console.log('navigating to ', this.$store.state.redirecter.redirectUrl);
+        console.log('NAVIGATING TO ', this.$store.state.redirecter.redirectUrl);
         this.$router.push(this.$store.state.redirecter.redirectUrl);
       }
 
@@ -2417,7 +2381,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _layout_mapSizer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../layout/mapSizer */ "./resources/js/components/layout/mapSizer.vue");
-/* harmony import */ var _layout_navigatorHomePage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../layout/navigatorHomePage */ "./resources/js/components/layout/navigatorHomePage.vue");
+/* harmony import */ var _layout_paginate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../layout/paginate */ "./resources/js/components/layout/paginate.vue");
 /* harmony import */ var _map_leafletMap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../map/leafletMap */ "./resources/js/components/map/leafletMap.vue");
 /* harmony import */ var _map_parts_markers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../map/parts/markers */ "./resources/js/components/map/parts/markers.vue");
 /* harmony import */ var _map_parts_lines__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../map/parts/lines */ "./resources/js/components/map/parts/lines.vue");
@@ -2427,6 +2391,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
 //
 //
 //
@@ -2509,7 +2475,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   })),
   components: {
     appMapSizer: _layout_mapSizer__WEBPACK_IMPORTED_MODULE_1__["default"],
-    appNavigator: _layout_navigatorHomePage__WEBPACK_IMPORTED_MODULE_2__["default"],
+    paginate: _layout_paginate__WEBPACK_IMPORTED_MODULE_2__["default"],
     leafletMap: _map_leafletMap__WEBPACK_IMPORTED_MODULE_3__["default"],
     leafletMapMarkers: _map_parts_markers__WEBPACK_IMPORTED_MODULE_4__["default"],
     leafletMapLines: _map_parts_lines__WEBPACK_IMPORTED_MODULE_5__["default"]
@@ -2691,6 +2657,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -2699,7 +2670,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     appMapSizer: _layout_mapSizer__WEBPACK_IMPORTED_MODULE_1__["default"],
-    //map
     leafletMap: _map_leafletMap__WEBPACK_IMPORTED_MODULE_2__["default"],
     leafletMapMarkers: _map_parts_markers__WEBPACK_IMPORTED_MODULE_3__["default"],
     leafletMapLines: _map_parts_lines__WEBPACK_IMPORTED_MODULE_4__["default"]
@@ -2707,101 +2677,100 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       punt_toevoegen_button: false,
+      subPagePosition: 0,
+      mapClickEnabled: false,
       mapsize: [6, 6],
       clickOnMap: ''
     };
   },
   watch: {
     clickOnMap: function clickOnMap(coordinaten) {
-      this.$store.commit('route/create/AddPatroon', coordinaten);
+      if (this.mapClickEnabled) {
+        this.$store.dispatch('route/create/newCoordinates', coordinaten);
+      }
+
+      this.mapClickEnabled = false;
     }
   },
-  methods: {
-    CreateRoute: function CreateRoute() {
-      this.$store.dispatch('route/create/Create');
-    },
+  methods: _objectSpread({
     puntToevoegenButton: function puntToevoegenButton() {
-      this.$store.commit('route/create/mapClickButton');
+      this.mapClickEnabled = !this.mapClickEnabled;
     },
-    stapEdit: function stapEdit(i) {
-      this.$store.commit('route/create/stapEdit', i);
+    setsubPagePosition: function setsubPagePosition(i) {
+      this.subPagePosition = i;
     },
-    nextStep: function nextStep() {
-      switch (this.stap) {
+    nextSubPage: function nextSubPage() {
+      var route = this.$store.state.route.create;
+
+      switch (this.subPagePosition) {
         case 0:
-          if (this.$store.state.route.create.naam.length < 7) {
-            this.$store.dispatch('displayMsg', {
-              text: 'De naam is kleiner dan 7 tekens.',
-              type: 'danger'
-            });
+          if (route.naam.length < 7) {
+            this.$store.dispatch('alert/danger', 'De naam is kleiner dan 7 tekens.');
             return;
           }
 
-          if (this.$store.state.route.create.land == '') {
-            this.$store.dispatch('displayMsg', {
-              text: 'Geen land gekozen',
-              type: 'danger'
-            });
+          if (route.land == '') {
+            this.$store.dispatch('alert/danger', 'Geen land gekozen');
             return;
           }
 
-          if (this.$store.state.route.create.vervoer == '') {
-            this.$store.dispatch('displayMsg', {
-              text: 'Geen vervoer gekozen.',
-              type: 'danger'
-            });
+          if (route.vervoer == '') {
+            this.$store.dispatch('alert/danger', 'Geen vervoer gekozen.');
             return;
           }
 
           break;
 
         case 1:
-          for (var index = 0; index < this.$store.state.route.create.patroon.length; index++) {
-            if (this.$store.state.route.create.patroon[index].naam == "") {
-              this.$store.dispatch('displayMsg', {
-                text: 'Een naam is niet ingevuld.',
-                type: 'danger'
-              });
+          for (var index in route.patroon.length) {
+            if (route.patroon[index].naam == "") {
+              this.$store.dispatch('alert/danger', 'Een naam is niet ingevuld.');
               return;
             }
           }
 
-          if (this.$store.state.route.create.patroon.length < 2) {
-            this.$store.dispatch('displayMsg', {
-              text: 'Er is geen route',
-              type: 'danger'
-            });
+          if (route.patroon.length < 2) {
+            this.$store.dispatch('alert/danger', 'Er is geen route');
             return;
           }
 
           break;
       }
 
-      this.stapEdit(this.stap + 1);
+      this.setsubPagePosition(this.subPagePosition + 1);
     },
-    prevStep: function prevStep() {
-      this.stapEdit(this.stap - 1);
+    previousStepSubPage: function previousStepSubPage() {
+      this.setsubPagePosition(this.subPagePosition - 1);
     },
     delPatroonItem: function delPatroonItem(index) {
-      this.$store.commit('route/create/DelPatroon', index);
-      this.$store.dispatch('displayMsg', {
-        text: 'Een punt is verwijderd.',
-        type: 'success'
+      this.$store.dispatch('route/create/removeCoordinate', index);
+      this.$store.dispatch('alert/success', 'Een punt is verwijderd.');
+    }
+  }, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])({
+    CreateRoute: 'route/create/save'
+  }), {
+    //operating Functions
+    dispatch: function dispatch(route, parameter) {
+      this.$store.dispatch(route, parameter, {
+        root: true
       });
     }
-  },
-  computed: _objectSpread({
-    stap: function stap() {
-      return this.$store.state.route.create.stap;
-    }
-  }, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('route/create', ['getGegevens', 'getPatroonLine', 'getBounds']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
+  }),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
     create: function create(state) {
       return state.route.create;
     },
     details: function details(state) {
       return state.route.details;
     }
-  }))
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
+    hasRouteLoaded: 'route/create/hasRouteLoaded',
+    getMapLines: 'route/create/mapLines/GET_MAP_LINES',
+    getMapBoundaries: 'route/create/mapBoundaries/GET_MAP_BOUNDARIES'
+  })),
+  created: function created() {
+    this.$store.dispatch('route/create/new');
+  }
 });
 
 /***/ }),
@@ -2827,38 +2796,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -2989,7 +2926,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.mapClickEnabled = false;
     }
   },
-  methods: {
+  methods: _objectSpread({
     setsubPagePosition: function setsubPagePosition(i) {
       this.subPagePosition = i;
     },
@@ -3042,10 +2979,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     delPatroonItem: function delPatroonItem(index) {
       this.$store.dispatch('route/edit/removeCoordinate', index);
       this.$store.dispatch('alert/success', 'Een punt is verwijderd.');
-    },
-    SaveRoute: function SaveRoute() {
-      this.dispatch('route/edit/save', this.$route.params.naam);
-    },
+    }
+  }, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])({
+    SaveRoute: 'route/edit/save'
+  }), {
     //operating Functions
     dispatch: function dispatch(route, parameter) {
       this.$store.dispatch(route, parameter, {
@@ -3059,7 +2996,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return string.length < number;
     } //end operating functions
 
-  },
+  }),
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
     edit: function edit(state) {
       return state.route.edit;
@@ -3305,7 +3242,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** global CSS */\nh1{\n    margin-bottom:40px;\n}\n.leaflet-control-attribution a, .leaflet-control-zoom {\n    display:none;\n}\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** global CSS */\nh1{\n    margin-bottom:40px;\n}\n.leaflet-control-attribution a, .leaflet-control-zoom {\n    display:none;\n}\n", ""]);
 
 // exports
 
@@ -3362,7 +3299,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\nli[data-v-37f0c7d7]{\n    cursor:pointer;\n}   \n", ""]);
+exports.push([module.i, "\nli[data-v-37f0c7d7]{\n    cursor: pointer;\n}   \n", ""]);
 
 // exports
 
@@ -19232,7 +19169,7 @@ var render = function() {
                         "a",
                         {
                           staticClass: "nav-link  m-3",
-                          on: { click: _vm.LoginPopup }
+                          on: { click: _vm.loginPopup }
                         },
                         [_vm._v("Login API")]
                       )
@@ -19388,10 +19325,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true&":
-/*!***************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/layout/navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true& ***!
-  \***************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/paginate.vue?vue&type=template&id=21ebb841&scoped=true&":
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/layout/paginate.vue?vue&type=template&id=21ebb841&scoped=true& ***!
+  \******************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -19404,82 +19341,15 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "div",
-      {
-        staticClass: "modal fade",
-        attrs: {
-          id: "exampleModalCenter",
-          tabindex: "-1",
-          role: "dialog",
-          "aria-labelledby": "exampleModalCenterTitle",
-          "aria-hidden": "true"
-        }
-      },
-      [
-        _c(
-          "div",
-          {
-            staticClass: "modal-dialog modal-dialog-centered",
-            attrs: { role: "document" }
-          },
-          [
-            _c("div", { staticClass: "modal-content" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass: "modal-body",
-                  staticStyle: { "min-height": "500px" }
-                },
-                [
-                  _c("h3", [_vm._v("actieve filters:")]),
-                  _vm._v(" "),
-                  _c(
-                    "p",
-                    _vm._l(10, function(i) {
-                      return _c(
-                        "button",
-                        { key: i, staticClass: "btn btn-success m-2" },
-                        [_vm._v("AutoRit")]
-                      )
-                    }),
-                    0
-                  ),
-                  _vm._v(" "),
-                  _c("h3", [_vm._v("in-actieve filters:")]),
-                  _vm._v(" "),
-                  _c(
-                    "p",
-                    _vm._l(55, function(i) {
-                      return _c(
-                        "button",
-                        { key: i, staticClass: "btn btn-secondary m-2" },
-                        [_vm._v("BusRit")]
-                      )
-                    }),
-                    0
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _vm._m(1)
-            ])
-          ]
-        )
-      ]
-    ),
-    _vm._v(" "),
     _c("nav", { staticClass: "navbar navbar-light bg-light" }, [
-      _vm._m(2),
+      _vm._m(0),
       _vm._v(" "),
       _c(
         "ul",
         { staticClass: "pagination pagination-sm mb-0" },
-        _vm._l(_vm.totalPages, function(i) {
+        _vm._l(_vm.paginate.TOTAL_PAGES, function(i) {
           return _c("div", { key: i }, [
-            _vm.currentPage != i
+            _vm.paginate.CURRENT_PAGE != i
               ? _c(
                   "li",
                   {
@@ -19487,8 +19357,12 @@ var render = function() {
                       {
                         name: "show",
                         rawName: "v-show",
-                        value: _vm.toonPaginationNumber(i, _vm.currentPage),
-                        expression: "toonPaginationNumber(i,currentPage)"
+                        value: _vm.toonPaginationNumber(
+                          i,
+                          _vm.paginate.CURRENT_PAGE
+                        ),
+                        expression:
+                          "toonPaginationNumber(i,paginate.CURRENT_PAGE)"
                       }
                     ],
                     staticClass: "page-item"
@@ -19532,55 +19406,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "h5",
-        {
-          staticClass: "modal-title",
-          attrs: { id: "exampleModalCenterTitle" }
-        },
-        [_vm._v("Click op filters om te toe te voegen")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-secondary",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("Close")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { type: "button" } },
-        [_vm._v("Save changes")]
-      )
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -19654,12 +19479,7 @@ var render = function() {
         "l-map",
         {
           staticStyle: { height: "500px", width: "100%" },
-          attrs: {
-            zoom: _vm.zoom,
-            bounds: _vm.view,
-            "max-bounds": _vm.view,
-            center: _vm.center
-          },
+          attrs: { zoom: _vm.zoom, bounds: _vm.view, center: _vm.center },
           on: { click: _vm.emitCoordinates }
         },
         [
@@ -19885,7 +19705,7 @@ var render = function() {
         "div",
         { class: "col-" + _vm.mapsize[0] },
         [
-          _c("app-navigator"),
+          _c("paginate"),
           _vm._v(" "),
           _c("table", { staticClass: "table" }, [
             _c(
@@ -20092,7 +19912,7 @@ var render = function() {
       { staticClass: "row" },
       [
         _c("transition", { attrs: { name: "fade", mode: "out-in" } }, [
-          _vm.stap == 0
+          _vm.subPagePosition == 0
             ? _c("div", { key: "stap0", staticClass: "col-12 stapBlock" }, [
                 _c("div", { staticClass: "form-group" }, [
                   _c("label", { attrs: { for: "Naamm" } }, [
@@ -20271,14 +20091,14 @@ var render = function() {
                     attrs: { type: "button" },
                     on: {
                       click: function($event) {
-                        return _vm.nextStep(2)
+                        return _vm.nextSubPage(2)
                       }
                     }
                   },
                   [_vm._v("Verder")]
                 )
               ])
-            : _vm.stap == 1
+            : _vm.subPagePosition == 1
             ? _c(
                 "div",
                 {
@@ -20362,7 +20182,7 @@ var render = function() {
                     "button",
                     {
                       class: "btn btn-success mt-3",
-                      on: { click: _vm.prevStep }
+                      on: { click: _vm.previousStepSubPage }
                     },
                     [_vm._v("Terug")]
                   ),
@@ -20372,16 +20192,20 @@ var render = function() {
                     {
                       class:
                         "btn btn-" +
-                        [_vm.create.mapClick ? "inverse" : "primary"] +
+                        [this.mapClickEnabled ? "inverse" : "primary"] +
                         " mt-3",
-                      attrs: { disabled: _vm.create.mapClick },
+                      attrs: { disabled: this.mapClickEnabled },
                       on: { click: _vm.puntToevoegenButton }
                     },
                     [
                       _vm._v(
-                        _vm._s(
-                          _vm.create.mapClick ? "klik op map" : "Punt toevoegen"
-                        )
+                        "                        \n                     " +
+                          _vm._s(
+                            this.mapClickEnabled
+                              ? "klik op map"
+                              : "Punt toevoegen"
+                          ) +
+                          "                    \n                 "
                       )
                     ]
                   ),
@@ -20390,7 +20214,7 @@ var render = function() {
                     "button",
                     {
                       class: "btn btn-success mt-3",
-                      on: { click: _vm.nextStep }
+                      on: { click: _vm.nextSubPage }
                     },
                     [_vm._v("Verder")]
                   )
@@ -20462,7 +20286,7 @@ var render = function() {
                     "button",
                     {
                       class: "btn btn-success mt-3",
-                      on: { click: _vm.prevStep }
+                      on: { click: _vm.previousStepSubPage }
                     },
                     [_vm._v("Terug")]
                   ),
@@ -20471,7 +20295,11 @@ var render = function() {
                     "button",
                     {
                       class: "btn btn-primary mt-3",
-                      on: { click: _vm.CreateRoute }
+                      on: {
+                        click: function($event) {
+                          return _vm.CreateRoute(this.$route.params.naam)
+                        }
+                      }
                     },
                     [_vm._v("Klaar")]
                   )
@@ -20480,7 +20308,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("transition", { attrs: { name: "fade-map", mode: "out-in" } }, [
-          _vm.stap != 0
+          _vm.subPagePosition != 0
             ? _c("div", { class: "col-" + _vm.mapsize[1] }, [
                 _c(
                   "div",
@@ -20494,6 +20322,7 @@ var render = function() {
                     _c(
                       "leafletMap",
                       {
+                        attrs: { view: _vm.getMapBoundaries },
                         model: {
                           value: _vm.clickOnMap,
                           callback: function($$v) {
@@ -20508,7 +20337,7 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("leafletMapLines", {
-                          attrs: { lines: _vm.getPatroonLine }
+                          attrs: { lines: _vm.getMapLines }
                         })
                       ],
                       1
@@ -20653,9 +20482,9 @@ var render = function() {
                         _vm._l(_vm.details.landen, function(land, i) {
                           return _c("option", { key: i }, [
                             _vm._v(
-                              "\n                             " +
+                              "\n                         " +
                                 _vm._s(land) +
-                                "\n                         "
+                                "\n                     "
                             )
                           ])
                         }),
@@ -20706,9 +20535,9 @@ var render = function() {
                         _vm._l(_vm.details.vervoer, function(vervoer, i) {
                           return _c("option", { key: i }, [
                             _vm._v(
-                              "\n                             " +
+                              "\n                         " +
                                 _vm._s(vervoer) +
-                                "\n                         "
+                                "\n                     "
                             )
                           ])
                         }),
@@ -20799,17 +20628,17 @@ var render = function() {
                               },
                               [
                                 _vm._v(
-                                  "\n                             Punt " +
+                                  "\n                         Punt " +
                                     _vm._s(index + 1) +
-                                    " : \n                             " +
+                                    " : " +
                                     _vm._s(
                                       onderdeel.coordinaten[0].toFixed(2)
                                     ) +
-                                    "\n                             ,\n                             " +
+                                    " , " +
                                     _vm._s(
                                       onderdeel.coordinaten[1].toFixed(2)
                                     ) +
-                                    "\n                         "
+                                    "\n                     "
                                 )
                               ]
                             ),
@@ -20871,13 +20700,13 @@ var render = function() {
                       },
                       [
                         _vm._v(
-                          "                        \n                     " +
+                          "                        \n                 " +
                             _vm._s(
                               this.mapClickEnabled
                                 ? "klik op map"
                                 : "Punt toevoegen"
                             ) +
-                            "                    \n                 "
+                            "                    \n             "
                         )
                       ]
                     ),
@@ -20974,7 +20803,11 @@ var render = function() {
                       "button",
                       {
                         class: "btn btn-primary mt-3",
-                        on: { click: _vm.SaveRoute }
+                        on: {
+                          click: function($event) {
+                            return _vm.SaveRoute(this.$route.params.naam)
+                          }
+                        }
                       },
                       [_vm._v("Klaar")]
                     )
@@ -48922,17 +48755,17 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/layout/navigatorHomePage.vue":
-/*!**************************************************************!*\
-  !*** ./resources/js/components/layout/navigatorHomePage.vue ***!
-  \**************************************************************/
+/***/ "./resources/js/components/layout/paginate.vue":
+/*!*****************************************************!*\
+  !*** ./resources/js/components/layout/paginate.vue ***!
+  \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _navigatorHomePage_vue_vue_type_template_id_0c0c5f2b_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true& */ "./resources/js/components/layout/navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true&");
-/* harmony import */ var _navigatorHomePage_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./navigatorHomePage.vue?vue&type=script&lang=js& */ "./resources/js/components/layout/navigatorHomePage.vue?vue&type=script&lang=js&");
+/* harmony import */ var _paginate_vue_vue_type_template_id_21ebb841_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./paginate.vue?vue&type=template&id=21ebb841&scoped=true& */ "./resources/js/components/layout/paginate.vue?vue&type=template&id=21ebb841&scoped=true&");
+/* harmony import */ var _paginate_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./paginate.vue?vue&type=script&lang=js& */ "./resources/js/components/layout/paginate.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -48942,50 +48775,50 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _navigatorHomePage_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _navigatorHomePage_vue_vue_type_template_id_0c0c5f2b_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _navigatorHomePage_vue_vue_type_template_id_0c0c5f2b_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _paginate_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _paginate_vue_vue_type_template_id_21ebb841_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _paginate_vue_vue_type_template_id_21ebb841_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  "0c0c5f2b",
+  "21ebb841",
   null
   
 )
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/layout/navigatorHomePage.vue"
+component.options.__file = "resources/js/components/layout/paginate.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/layout/navigatorHomePage.vue?vue&type=script&lang=js&":
-/*!***************************************************************************************!*\
-  !*** ./resources/js/components/layout/navigatorHomePage.vue?vue&type=script&lang=js& ***!
-  \***************************************************************************************/
+/***/ "./resources/js/components/layout/paginate.vue?vue&type=script&lang=js&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/layout/paginate.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_navigatorHomePage_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./navigatorHomePage.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/navigatorHomePage.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_navigatorHomePage_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_paginate_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./paginate.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/paginate.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_paginate_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/layout/navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true&":
-/*!*********************************************************************************************************!*\
-  !*** ./resources/js/components/layout/navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true& ***!
-  \*********************************************************************************************************/
+/***/ "./resources/js/components/layout/paginate.vue?vue&type=template&id=21ebb841&scoped=true&":
+/*!************************************************************************************************!*\
+  !*** ./resources/js/components/layout/paginate.vue?vue&type=template&id=21ebb841&scoped=true& ***!
+  \************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_navigatorHomePage_vue_vue_type_template_id_0c0c5f2b_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/navigatorHomePage.vue?vue&type=template&id=0c0c5f2b&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_navigatorHomePage_vue_vue_type_template_id_0c0c5f2b_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_paginate_vue_vue_type_template_id_21ebb841_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./paginate.vue?vue&type=template&id=21ebb841&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/layout/paginate.vue?vue&type=template&id=21ebb841&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_paginate_vue_vue_type_template_id_21ebb841_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_navigatorHomePage_vue_vue_type_template_id_0c0c5f2b_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_paginate_vue_vue_type_template_id_21ebb841_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -50083,7 +49916,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
           dispatch = _ref2.dispatch,
           rootState = _ref2.rootState,
           state = _ref2.state;
-      var paginate = rootState.paginate.currentPage;
+      var paginate = rootState.paginate.CURRENT_PAGE;
       var url = window.location.origin + '/api/route/get?page=' + paginate;
       axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).then(function (response) {
         commit('SET_ROUTES', response.data.data);
@@ -50099,6 +49932,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
       if (state.SHOWN_ROUTE != state.ROUTES[index]) {
         commit('SET_SHOWN_ROUTE', index);
         var coordinates = state.SHOWN_ROUTE.patroon;
+        dispatch('mapBoundaries/reset');
         dispatch('mapBoundaries/createMapBoundaries', coordinates);
         dispatch('mapLines/createMapLines', coordinates);
       }
@@ -50208,16 +50042,20 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+var MAPINIT_LOW_LAT = 43;
+var MAPINIT_LOW_LNG = -9;
+var MAPINIT_HIGH_LAT = 55;
+var MAPINIT_HIGH_LNG = 17;
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
     LOWER_COORDINATES: {
-      latitude: 9999999,
-      longtitude: 9999999
+      latitude: MAPINIT_LOW_LAT,
+      longtitude: MAPINIT_LOW_LNG
     },
     HIGHER_COORDINATES: {
-      latitude: 0,
-      longtitude: 0
+      latitude: MAPINIT_HIGH_LAT,
+      longtitude: MAPINIT_HIGH_LNG
     }
   },
   getters: {
@@ -50258,6 +50096,13 @@ __webpack_require__.r(__webpack_exports__);
           longtitudeItem < state.LOWER_COORDINATES.longtitude ? commit('SET_LOWER_COORDINATES_LONGTITUDE', longtitudeItem) : '';
         }
       }
+    },
+    reset: function reset(_ref2) {
+      var commit = _ref2.commit;
+      commit('SET_HIGHER_COORDINATES_LATITUDE', -53);
+      commit('SET_HIGHER_COORDINATES_LONGTITUDE', -70);
+      commit('SET_LOWER_COORDINATES_LATITUDE', 74);
+      commit('SET_LOWER_COORDINATES_LONGTITUDE', 100);
     }
   }
 });
@@ -50291,6 +50136,10 @@ __webpack_require__.r(__webpack_exports__);
     REMOVE_MAP_LINES: function REMOVE_MAP_LINES(state) {
       state.MAP_LINES = [];
       console.log('REMOVE_MAP_LINES');
+    },
+    SET_MAP_LINES: function SET_MAP_LINES(state, payload) {
+      state.MAP_LINES = payload;
+      console.log('SET_MAP_LINES');
     }
   },
   actions: {
@@ -50306,6 +50155,10 @@ __webpack_require__.r(__webpack_exports__);
           commit('ADD_MAP_LINE', coordinates[index].coordinaten);
         }
       }
+    },
+    removeMapLines: function removeMapLines(_ref2) {
+      var commit = _ref2.commit;
+      commit('SET_MAP_LINES', []);
     }
   }
 });
@@ -50327,7 +50180,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculation/mapBoundaries */ "./resources/js/store/module/route/calculation/mapBoundaries.js");
+/* harmony import */ var _calculation_mapLines__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./calculation/mapLines */ "./resources/js/store/module/route/calculation/mapLines.js");
 //imports
+
+
 
 
  //uses
@@ -50335,143 +50192,91 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_1___default.a, axios__WEBPACK_IMPORTED_MODULE_2___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
-  //sampledata
+  modules: {
+    mapBoundaries: _calculation_mapBoundaries__WEBPACK_IMPORTED_MODULE_3__["default"],
+    mapLines: _calculation_mapLines__WEBPACK_IMPORTED_MODULE_4__["default"]
+  },
   state: {
-    stap: 0,
     land: '',
-    //'Nederland',
     vervoer: '',
-    //'Wandelen',
     naam: '',
-    //'Prachtig mooie wandeltocht door de natuur',
     informatie: '',
-    //'Voor de gemiddelde 60+er is deze afstand perfect (met de auto)',
-    CenterCoordinates: [52.237993, 6.161133],
-    mapClick: false,
-    patroon: [//{naam:'Amsterdam', coordinaten:[52.01 , 6.07], commentaar: 'Leuk mooi stad.'},
-      //{naam:'Rotterdam', coordinaten:[51.77 , 4.96], commentaar: 'Echt een aanrader'},
-      //{naam:'Den Haag',  coordinaten:[52.51 , 6.01], commentaar: 'Waar zijn de duinen?'}     
-    ]
+    patroon: []
   },
-  getters: {
-    getGegevens: function getGegevens(state) {
-      return {
-        naam: state.naam,
-        land: state.land,
-        vervoer: state.vervoer
-      };
-    },
-    getPatroonLine: function getPatroonLine(state) {
-      var returnWaarde = [];
-
-      for (var index = 0; index < state.patroon.length; index++) {
-        if (!(state.patroon[index].coordinaten[0] == 0 && state.patroon[index].coordinaten[1] == 0)) {
-          returnWaarde.push(state.patroon[index].coordinaten);
-        }
-      }
-
-      return returnWaarde;
-    },
-    getBounds: function getBounds(state) {
-      var default_val = [[49.515, 0.5761], [54.477, 10.463]]; //nederland
-
-      var lat_max = 0;
-      var lng_max = 0;
-      var lat_min = 9999999;
-      var lng_min = 9999999;
-      var patroon = state.patroon;
-
-      if (patroon != undefined) {
-        for (var index = 0; index < patroon.length; index++) {
-          var lat = patroon[index].coordinaten[0];
-          var lng = patroon[index].coordinaten[1];
-
-          if (lat > lat_max) {
-            lat_max = lat;
-          }
-
-          if (lat < lat_min) {
-            lat_min = lat;
-          }
-
-          if (lng > lng_max) {
-            lng_max = lng;
-          }
-
-          if (lng < lng_min) {
-            lng_min = lng;
-          }
-        }
-
-        return [[lat_min, lng_min], [lat_max, lng_max]]; //bounds
-      }
-
-      return default_val; //nl kaart
-    }
-  },
+  getters: {},
   mutations: {
-    SetCenter: function SetCenter(state, payload) {
-      state.CenterCoordinates = payload;
+    RESET_ROUTE: function RESET_ROUTE(state) {
+      state.informatie = '';
+      state.land = '';
+      state.naam = '';
+      state.vervoer = '';
+      state.patroon = [];
+      console.log('RESET_ROUTE');
     },
-    stapEdit: function stapEdit(state, payload) {
-      state.stap = payload;
+    ADD_ROUTE_COORDINATES: function ADD_ROUTE_COORDINATES(state, coordinate) {
+      var coordinateObject = {
+        naam: '',
+        coordinaten: [coordinate.lat, coordinate.lng]
+      };
+      state.patroon.push(coordinateObject);
+      console.log('ADD_ROUTE_COORDINATES');
     },
-    AddPatroon: function AddPatroon(state, payload) {
-      if (state.mapClick) {
-        state.patroon.push({
-          naam: '',
-          coordinaten: [payload.lat, payload.lng]
-        }); // last item           
-
-        state.mapClick = false;
-      }
-    },
-    mapClickButton: function mapClickButton(state) {
-      state.mapClick = !state.mapClick;
-    },
-    DelPatroon: function DelPatroon(state, payload) {
+    DELETE_ROUTE_COORDINATES: function DELETE_ROUTE_COORDINATES(state, payload) {
       state.patroon.splice(payload, 1);
+      console.log('DELETE_ROUTE_COORDINATES');
     }
   },
   actions: {
-    Create: function Create(_ref) {
+    newCoordinates: function newCoordinates(_ref, coordinate) {
       var state = _ref.state,
           commit = _ref.commit,
           dispatch = _ref.dispatch;
-      var toSend = {};
-      toSend.informatie = state.informatie;
-      toSend.land = state.land;
-      toSend.naam = state.naam;
-      toSend.vervoer = state.vervoer;
-      toSend.patroon = state.patroon;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(window.location.origin + '/api/route/create', toSend).then(function (response) {
+      commit('ADD_ROUTE_COORDINATES', coordinate);
+      dispatch('mapBoundaries/createMapBoundaries', state.patroon);
+      dispatch('mapLines/createMapLines', state.patroon);
+    },
+    removeCoordinate: function removeCoordinate(_ref2, index) {
+      var commit = _ref2.commit,
+          dispatch = _ref2.dispatch,
+          state = _ref2.state;
+      console.log(index);
+      commit('DELETE_ROUTE_COORDINATES', index);
+      dispatch('mapBoundaries/createMapBoundaries', state.patroon);
+      dispatch('mapLines/createMapLines', state.patroon);
+    },
+    "new": function _new(_ref3) {
+      var commit = _ref3.commit,
+          dispatch = _ref3.dispatch;
+      commit('RESET_ROUTE');
+      dispatch('mapLines/removeMapLines');
+    },
+    save: function save(_ref4) {
+      var state = _ref4.state,
+          commit = _ref4.commit,
+          dispatch = _ref4.dispatch;
+      var postObj = {
+        informatie: state.informatie,
+        land: state.land,
+        naam: state.naam,
+        vervoer: state.vervoer,
+        patroon: state.patroon
+      };
+      var url = window.location.origin + '/api/route/create';
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(url, postObj).then(function (response) {
         if (response.data == "error") {
-          dispatch('displayMsg', {
-            text: 'Route bestaat al.'
-          }, {
+          dispatch('alert/danger', 'Route bestaat al.', {
             root: true
           });
           return;
         }
 
-        dispatch('displayMsg', {
-          text: 'nieuwe route is gemaakt.'
-        }, {
+        dispatch('alert/success', 'nieuwe route is gemaakt.', {
           root: true
         });
-        dispatch('redirecter/redirect', '/Mijn', {
+        dispatch('redirecter/redirect', '/manage', {
           root: true
         });
-        dispatch('route/reloadMyRoutes', '', {
-          root: true
-        }); //reset
-
-        state.stap = 0;
-        state.informatie = '';
-        state.land = '';
-        state.naam = '';
-        state.vervoer = '';
-        state.patroon = [];
+        dispatch('mapLines/removeMapLines');
       });
     }
   }
@@ -50554,7 +50359,6 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
       console.log('DELETE_ROUTE_COORDINATES');
     },
     RESET_ROUTE: function RESET_ROUTE(state) {
-      state.stap = 0;
       state.informatie = '';
       state.land = '';
       state.naam = '';
@@ -50615,10 +50419,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
         dispatch('alert/success', 'Route is aangepast.', {
           root: true
         });
-        dispatch('redirecter/redirect', '/Mijn', {
-          root: true
-        });
-        dispatch('route/reloadMyRoutes', '', {
+        dispatch('redirecter/redirect', '/manage', {
           root: true
         });
         commit('RESET_ROUTE');
@@ -50862,10 +50663,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/store/module/tools/auth.js":
-/*!*************************************************!*\
-  !*** ./resources/js/store/module/tools/auth.js ***!
-  \*************************************************/
+/***/ "./resources/js/store/module/tools/authenticate.js":
+/*!*********************************************************!*\
+  !*** ./resources/js/store/module/tools/authenticate.js ***!
+  \*********************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -50884,72 +50685,68 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_1___default.a, axios__WEBPACK_IMPORTED_MODULE_2___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
   state: {
-    authUser: {}
+    AUTHENTICATED_USER: {}
   },
   getters: {
     isLoggedIn: function isLoggedIn(state) {
-      return !(Object.keys(state.authUser).length === 0);
+      console.log(state.AUTHENTICATED_USER);
+      return !(Object.keys(state.AUTHENTICATED_USER).length === 0);
     },
-    getAuthUser: function getAuthUser(state) {
-      return state.authUser;
+    getAuthenticatedUser: function getAuthenticatedUser(state) {
+      return state.AUTHENTICATED_USER;
     }
   },
   mutations: {
-    setAuthUser: function setAuthUser(state, payload) {
-      state.authUser = payload;
+    SET_AUTHENTICATED_USER: function SET_AUTHENTICATED_USER(state, payload) {
+      state.AUTHENTICATED_USER = payload;
     }
   },
   actions: {
-    LoginPopup: function LoginPopup(_ref, payload) {
+    loginPopup: function loginPopup(_ref) {
       var commit = _ref.commit,
           dispatch = _ref.dispatch;
-      // OPEN WINDOW                    
-      var popup = window.open(window.location.origin + '/login/google', //loc
-      'popUpWindow', //name
-      'height=500,width=500,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes' //stats
+      var popup = window.open(window.location.origin + '/login/google', 'popUpWindow', 'height=500,width=500,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes' //stats
       );
-      console.log(popup.location.href); //check for result
-
       var interval = setInterval(function () {
-        //  console.log(popup.location.href); 
         if (popup.location.href == window.location.origin + '/ApiLoginSuccesfull') {
-          commit('setAuthUser', JSON.parse(popup.document.body.innerHTML));
-          dispatch('displayMsg', {
-            text: 'Welkom, je bent ingelogd'
+          commit('SET_AUTHENTICATED_USER', JSON.parse(popup.document.body.innerHTML));
+          dispatch('alert/success', 'Welkom, je bent ingelogd', {
+            root: true
           });
           clearInterval(interval);
           popup.close();
         }
 
-        if (popup.location.href == undefined) {
-          // Popup was closed stop searching
+        if (!popup.location.href) {
           clearInterval(interval);
         }
       }, 200);
     },
-    fetchAuthAtStartup: function fetchAuthAtStartup(_ref2, payload) {
+    load: function load(_ref2) {
       var commit = _ref2.commit;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/getAuth').then(function (response) {
+      var url = window.location.origin + '/api/getAuth';
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).then(function (response) {
         if (_typeof(response.data) === 'object') {
-          // if returns object is an account!
-          commit('setAuthUser', response.data);
+          commit('SET_AUTHENTICATED_USER', response.data);
         }
       });
     },
-    logOut: function logOut(_ref3, payload) {
-      var _this = this;
-
+    logOut: function logOut(_ref3) {
       var commit = _ref3.commit,
           dispatch = _ref3.dispatch;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/logout').then(function (response) {
+      var url = window.location.origin + '/logout';
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).then(function (response) {
         if (response.data === 'succes') {
-          dispatch('displayMsg', {
-            text: 'je bent uitgelogd'
+          var emptyUser = {};
+          commit('SET_AUTHENTICATED_USER', emptyUser);
+          dispatch('alert/success', 'je bent uitgelogd', {
+            root: true
           });
-          commit('setAuthUser', {}); //deleteUser
-
-          _this.$router.push('Home');
+          dispatch('redirecter/redirect', '/', {
+            root: true
+          });
         }
       });
     }
@@ -50980,21 +50777,29 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
-    currentPage: 1,
-    totalPages: 0
+    CURRENT_PAGE: 1,
+    TOTAL_PAGES: 0
   },
   getters: {},
-  mutations: {},
+  mutations: {
+    SET_TOTAL_PAGES: function SET_TOTAL_PAGES(state, payload) {
+      state.TOTAL_PAGES = payload;
+    },
+    SET_CURRENT_PAGE: function SET_CURRENT_PAGE(state, payload) {
+      state.CURRENT_PAGE = payload;
+    }
+  },
   actions: {
-    getPages: function getPages(_ref, payload) {
-      var state = _ref.state;
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(window.location.origin + '/api/route/get/pages').then(function (response) {
-        state.totalPages = response.data;
+    getPages: function getPages(_ref) {
+      var commit = _ref.commit;
+      var url = window.location.origin + '/api/route/get/pages';
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).then(function (response) {
+        commit('SET_TOTAL_PAGES', response.data);
       });
     },
-    changePageNr: function changePageNr(_ref2, payload) {
-      var state = _ref2.state;
-      state.currentPage = payload;
+    changePageNr: function changePageNr(_ref2, nr) {
+      var commit = _ref2.commit;
+      commit('SET_CURRENT_PAGE', nr);
     }
   }
 });
@@ -51022,26 +50827,26 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mutations: {
-    setRedirectUrl: function setRedirectUrl(state, payload) {
+    SET_REDIRECT_URL: function SET_REDIRECT_URL(state, payload) {
       state.redirectUrl = payload;
     },
-    redirectOn: function redirectOn(state) {
+    REDIRECT_ON: function REDIRECT_ON(state) {
       state.redirectSwitch = true;
     },
-    redirectOff: function redirectOff(state) {
+    REDIRECT_OFF: function REDIRECT_OFF(state) {
       state.redirectSwitch = false;
     }
   },
   actions: {
     redirect: function redirect(_ref, payload) {
       var commit = _ref.commit;
-      commit('setRedirectUrl', payload);
-      commit('redirectOn');
+      commit('SET_REDIRECT_URL', payload);
+      commit('REDIRECT_ON');
     },
     redirectFinished: function redirectFinished(_ref2) {
       var commit = _ref2.commit;
-      commit('setRedirectUrl', '');
-      commit('redirectOff');
+      commit('SET_REDIRECT_URL', '');
+      commit('REDIRECT_OFF');
     }
   }
 });
@@ -51062,7 +50867,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _module_tools_alert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./module/tools/alert */ "./resources/js/store/module/tools/alert.js");
-/* harmony import */ var _module_tools_auth__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./module/tools/auth */ "./resources/js/store/module/tools/auth.js");
+/* harmony import */ var _module_tools_authenticate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./module/tools/authenticate */ "./resources/js/store/module/tools/authenticate.js");
 /* harmony import */ var _module_tools_redirecter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./module/tools/redirecter */ "./resources/js/store/module/tools/redirecter.js");
 /* harmony import */ var _module_tools_paginate__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./module/tools/paginate */ "./resources/js/store/module/tools/paginate.js");
 /* harmony import */ var _module_route__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./module/route */ "./resources/js/store/module/route.js");
@@ -51079,12 +50884,11 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   modules: {
     alert: _module_tools_alert__WEBPACK_IMPORTED_MODULE_2__["default"],
-    auth: _module_tools_auth__WEBPACK_IMPORTED_MODULE_3__["default"],
+    authenticate: _module_tools_authenticate__WEBPACK_IMPORTED_MODULE_3__["default"],
     route: _module_route__WEBPACK_IMPORTED_MODULE_6__["default"],
     redirecter: _module_tools_redirecter__WEBPACK_IMPORTED_MODULE_4__["default"],
     paginate: _module_tools_paginate__WEBPACK_IMPORTED_MODULE_5__["default"]
-  },
-  actions: {}
+  }
 });
 
 /***/ }),

@@ -12,29 +12,25 @@ export default {
     },
     mutations : {
 
-        setRedirectUrl (state,payload)  {             
+        SET_REDIRECT_URL (state,payload)  {             
             state.redirectUrl = payload;                      
         },
-        redirectOn (state)  {  
+        REDIRECT_ON (state)  {  
             state.redirectSwitch = true;
         },
-        redirectOff (state){
+        REDIRECT_OFF (state){
             state.redirectSwitch = false;
         }
 
     },
     actions : {
         redirect: ({commit}, payload) => {  
-
-            commit('setRedirectUrl',payload);
-            commit('redirectOn');            
-
+            commit('SET_REDIRECT_URL',payload);
+            commit('REDIRECT_ON');            
         },
-        redirectFinished: ({commit}) => {
-            
-            commit('setRedirectUrl','');
-            commit('redirectOff');      
-
+        redirectFinished: ({commit}) => {            
+            commit('SET_REDIRECT_URL','');
+            commit('REDIRECT_OFF');      
         }        
     },
 

@@ -1,104 +1,74 @@
 <template>
-   <div>       
-        
+   <div>               
         <app-loader v-show="!hasRouteLoaded" ></app-loader> 
-        
 
         <div class='row'>                
            <transition name="fade"  mode="out-in">  
-
-           
             
-            <div  v-if="subPagePosition == 0" key="stap0" class="col-12 stapBlock">
-                    
-                    <div class="form-group">
-                        <label for="Naam">Naam van de route?</label>
-                        <input type="text" class="form-control" id="Naam" placeholder="Naam van de Route"  v-model="edit.naam" >                
+            <div  v-if="subPagePosition == 0" key="stap0" class="col-12 stapBlock">                
+                <div class="form-group">
+                    <label for="Naam">Naam van de route?</label>
+                    <input type="text" class="form-control" id="Naam" placeholder="Naam van de Route"  v-model="edit.naam" >                
+                </div> 
+                <div class="row">
+                    <div class="form-group col-6" >
+                        <label for="exampleFormControlSelect1">In welk land?</label>
+                        <select v-model="edit.land" class="form-control" id="exampleFormControlSelect1">
+                        <option v-for="(land,i) in details.landen" :key="i">
+                            {{land}}
+                        </option>                    
+                        </select>
                     </div> 
-                    <div class="row">
-                        <div class="form-group col-6" >
-                            <label for="exampleFormControlSelect1">In welk land?</label>
-                            <select v-model="edit.land" class="form-control" id="exampleFormControlSelect1">
-                            <option v-for="(land,i) in details.landen" :key="i">
-                                {{land}}
-                            </option>                    
-                            </select>
-                        </div> 
-                        <div class="form-group col-6" >
-                            <label for="exampleFormControlSelect1">Met welk vervoer?</label>
-                            <select v-model="edit.vervoer" class="form-control" id="exampleFormControlSelect1">
-                            <option v-for="(vervoer,i) in details.vervoer" :key="i">
-                                {{vervoer}}
-                            </option>                    
-                            </select>
-                        </div>                     
-                    </div>   
-                    <div class="form-group">
-                            <label for="exampleFormControlTextarea1">Informatie</label>
-                            <textarea v-model="edit.informatie" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                    </div>     
-                    <button type="button" @click="nextSubPage" class="btn btn-success">Verder</button>
-                </div>
-
-
-
-
-
+                    <div class="form-group col-6" >
+                        <label for="exampleFormControlSelect1">Met welk vervoer?</label>
+                        <select v-model="edit.vervoer" class="form-control" id="exampleFormControlSelect1">
+                        <option v-for="(vervoer,i) in details.vervoer" :key="i">
+                            {{vervoer}}
+                        </option>                    
+                        </select>
+                    </div>                     
+                </div>   
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Informatie</label>
+                    <textarea v-model="edit.informatie" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>     
+                <button type="button" @click="nextSubPage" class="btn btn-success">Verder</button>
+            </div>
                      
-                <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="subPagePosition == 1" key="stap1"> 
-                    
-                    <ul class="list-group">
-                            <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
+            <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="subPagePosition == 1" key="stap1">                     
+                <ul class="list-group">
 
-                            <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delPatroonItem(index)" style="float:right">x</button>
-                            <label class='pt-2' :for="'naam'+index">
-                                Punt {{index+1}} : 
-                                {{ onderdeel.coordinaten[0].toFixed(2)}}
-                                ,
-                                {{ onderdeel.coordinaten[1].toFixed(2)}}
-                            </label>
-                            <input  v-model="onderdeel.naam" type="text" class="form-control" :id="'naam'+index" aria-describedby="naam2" placeholder="Vul naam in.">
-                            
-                        </li>                            
-                    </ul> 
-                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
-                    <button 
-                        :disabled="this.mapClickEnabled"
-                        :class="'btn btn-'+[this.mapClickEnabled ? 'inverse' : 'primary' ]+' mt-3'"
-                        @click="puntToevoegenButton"
-                    >                        
-                        {{this.mapClickEnabled ? 'klik op map':'Punt toevoegen'}}                    
-                    </button>     
-                    <button :class="'btn btn-success mt-3'" @click="nextSubPage">Verder</button>                                  
-                
-                </div>
+                    <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
+                        <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delPatroonItem(index)" style="float:right">x</button>
+                        <label class='pt-2' :for="'naam'+index">
+                            Punt {{index+1}} : {{ onderdeel.coordinaten[0].toFixed(2)}} , {{ onderdeel.coordinaten[1].toFixed(2)}}
+                        </label>
+                        <input  v-model="onderdeel.naam" type="text" class="form-control" :id="'naam'+index" aria-describedby="naam2" placeholder="Vul naam in.">
+                    </li>                     
 
-
-
-
-                        
-
+                </ul> 
+                <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                <button :disabled="this.mapClickEnabled" :class="'btn btn-'+[this.mapClickEnabled ? 'inverse' : 'primary' ]+' mt-3'" @click="puntToevoegenButton">                        
+                    {{this.mapClickEnabled ? 'klik op map':'Punt toevoegen'}}                    
+                </button>     
+                <button :class="'btn btn-success mt-3'" @click="nextSubPage">Verder</button>       
+            </div>
                    
-                <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="subPagePosition == 2" key="stap2">                     
-                    
+            <div class="stapBlock" :class="'col-'+mapsize[0]" v-if="subPagePosition == 2" key="stap2">    
+                <ul class="list-group">
 
-                    <ul class="list-group">
-                        <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
-                        
-                            <div class="form-group">
-                                <label for="exampleFormControlTextarea1">{{index}} : {{onderdeel.naam}}</label>
-                                <textarea v-model="onderdeel.commentaar" class="form-control" id="exampleFormControlTextarea1" rows="1"></textarea>
-                            </div> 
-                        </li> 
-                    </ul>                   
-                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
-                    <button :class="'btn btn-primary mt-3'" @click="SaveRoute">Klaar</button> 
-                </div>
+                    <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">                        
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">{{index}} : {{onderdeel.naam}}</label>
+                            <textarea v-model="onderdeel.commentaar" class="form-control" id="exampleFormControlTextarea1" rows="1"></textarea>
+                        </div> 
+                    </li> 
 
-
-
-
-           </transition>
+                </ul>                   
+                <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                <button :class="'btn btn-primary mt-3'" @click="SaveRoute(this.$route.params.naam)">Klaar</button> 
+            </div>
+        </transition>
 
           
             <transition name="fade-map"  mode="out-in"> 
@@ -117,19 +87,17 @@
                         
                         
                         <app-map-sizer v-model='mapsize'></app-map-sizer>
-                    </div>
-                    
+                    </div>                    
                 </div>
-            </transition>             
-                         
+            </transition>         
+
         </div> 
-                    
     </div> 
 </template>
 
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 import appMapSizer from '../../layout/mapSizer'
 import appLoader from '../../mechanism/loader'
 import leafletMap from '../../map/leafletMap'
@@ -159,8 +127,7 @@ export default {
             if(this.mapClickEnabled){
                 this.$store.dispatch('route/edit/newCoordinates', coordinaten ) 
             }
-            this.mapClickEnabled = false;
-        
+            this.mapClickEnabled = false;        
         }
     },
 
@@ -216,13 +183,11 @@ export default {
         delPatroonItem(index){
             this.$store.dispatch('route/edit/removeCoordinate',index);
             this.$store.dispatch('alert/success','Een punt is verwijderd.')
-        },        
+        },          
 
-        SaveRoute(){ 
-            this.dispatch('route/edit/save', this.$route.params.naam)
-        },
-
-
+        ...mapActions({
+            SaveRoute: 'route/edit/save'
+        }),
 
         //operating Functions
         dispatch(route,parameter){
@@ -249,8 +214,7 @@ export default {
             hasRouteLoaded: 'route/edit/hasRouteLoaded',
             getMapLines: 'route/edit/mapLines/GET_MAP_LINES',
             getMapBoundaries: 'route/edit/mapBoundaries/GET_MAP_BOUNDARIES',
-        }),          
-                   
+        }),                             
     },
 
     created(){           
@@ -276,7 +240,6 @@ export default {
     .fade-map-enter, .fade-map-leave-to /* .fade-leave-active below version 2.1.8 */ {
         opacity: 0;
     }
-
     .stapBlock{
         margin-top:50px;
         margin-bottom:40%;

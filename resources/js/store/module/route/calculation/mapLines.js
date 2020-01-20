@@ -16,6 +16,10 @@ export default {
         REMOVE_MAP_LINES(state){
             state.MAP_LINES = [];
             console.log('REMOVE_MAP_LINES')             
+        },
+        SET_MAP_LINES(state,payload){
+            state.MAP_LINES = payload;
+            console.log('SET_MAP_LINES')   
         }
     },
     actions : {
@@ -32,7 +36,10 @@ export default {
                 }                              
 
             }       
-        }
+        },
+        removeMapLines({commit}){
+            commit('SET_MAP_LINES',[])
+        }   
     },
 
  }

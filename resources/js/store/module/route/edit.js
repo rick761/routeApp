@@ -7,9 +7,7 @@ import mapLines from './calculation/mapLines'
 Vue.use(VueAxios, axios)
 
 export default {    
-
     namespaced: true,
-
     modules:{
         mapBoundaries,
         mapLines
@@ -45,8 +43,7 @@ export default {
             state.patroon.splice(payload,1);
             console.log('DELETE_ROUTE_COORDINATES');
         },
-        RESET_ROUTE(state){
-            state.stap = 0;
+        RESET_ROUTE(state){            
             state.informatie = '';
             state.land = '';
             state.naam = '';
@@ -98,8 +95,7 @@ export default {
                     return;
                 }                                             
                 dispatch('alert/success','Route is aangepast.',{root:true} );
-                dispatch('redirecter/redirect','/Mijn', {root:true} );
-                dispatch('route/reloadMyRoutes','', {root:true} );        
+                dispatch('redirecter/redirect','/manage', {root:true} );
                 commit('RESET_ROUTE');   
              })             
             

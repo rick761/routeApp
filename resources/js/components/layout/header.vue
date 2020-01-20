@@ -1,9 +1,7 @@
 <template>
 
     <div>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-
-            <!--<a class="navbar-brand" href="#">Navbar</a>-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">          
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -18,17 +16,18 @@
 
                     <router-link active-class="active" v-if="isLoggedIn" class="nav-item" tag="li" to="/manage">
                         <a class="nav-link m-3" > Mijn routes</a>
-                    </router-link>
-                    
-                     
+                    </router-link>            
                     
                 </ul>
+
+                
 
                <ul class="nav navbar-nav navbar-right">   
                                     
                     <li class="nav-item" v-if="!isLoggedIn">
-                        <a class="nav-link  m-3" @click="LoginPopup">Login API</a> 
+                        <a class="nav-link  m-3" @click="loginPopup">Login API</a> 
                     </li>  
+                    
 
                     <router-link class="nav-item" v-if="isLoggedIn" tag="li" to="/account">
                         <a class="nav-link  m-3 pl-2" >
@@ -45,17 +44,8 @@
 
                 </ul>
             </div>
-        </nav>
-
-       
-        
-        
-            
-        
-       
-      
-    </div>
-    
+        </nav>     
+    </div>   
 
 </template>
 
@@ -66,10 +56,16 @@
     
     export default {         
     computed:{        
-        ...mapGetters(['isLoggedIn','getAuthUser'])
+        ...mapGetters({
+            isLoggedIn: 'authenticate/isLoggedIn',
+            getAuthUser:'authenticate/getAuthenticatedUser'
+        })
     },
     methods:{
-        ...mapActions(['LoginPopup','logOut']),        
+        ...mapActions({
+            loginPopup: 'authenticate/loginPopup',
+            logOut:     'authenticate/logOut'
+        }),        
     }
 }
 </script>
@@ -77,6 +73,6 @@
 
 <style scoped>
     li{
-        cursor:pointer;
+        cursor: pointer;
     }   
 </style>

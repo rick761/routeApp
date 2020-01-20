@@ -4,8 +4,10 @@
         <div class="row">
 
             <div class="" :class="'col-'+mapsize[0]">
+
                 <!--navigator-->
-                <app-navigator></app-navigator>
+                <paginate></paginate>
+
                 <table class="table">                  
                     <tbody>
                         <router-link tag="tr" v-for="(routeItem, index) in route.ROUTES" 
@@ -53,7 +55,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import appMapSizer from '../layout/mapSizer';
-import appNavigator from "../layout/navigatorHomePage";
+import paginate from "../layout/paginate";
 
 //map
 import leafletMap from "../map/leafletMap";
@@ -83,7 +85,7 @@ export default {
     },    
     components:{        
         appMapSizer,        
-        appNavigator,
+        paginate,
         leafletMap,
         leafletMapMarkers,
         leafletMapLines

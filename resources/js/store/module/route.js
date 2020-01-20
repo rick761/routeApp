@@ -61,7 +61,8 @@ export default {
         }, 
 
         load( {commit, dispatch, rootState, state } ) {  
-            var paginate = rootState.paginate.currentPage;            
+            var paginate = rootState.paginate.CURRENT_PAGE;  
+            
             var url = window.location.origin+'/api/route/get?page='+paginate;    
 
             axios.get( url ).then( response => {      
@@ -77,6 +78,7 @@ export default {
                 commit('SET_SHOWN_ROUTE',index);  
 
                 var coordinates = state.SHOWN_ROUTE.patroon;
+                dispatch('mapBoundaries/reset')
                 dispatch('mapBoundaries/createMapBoundaries', coordinates);
                 dispatch('mapLines/createMapLines', coordinates)
             }                                                   

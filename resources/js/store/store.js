@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 //extra modules
 import alert from './module/tools/alert'
-import auth from './module/tools/auth'
+import authenticate from './module/tools/authenticate'
 import redirecter from './module/tools/redirecter'
 import paginate from './module/tools/paginate'
 
@@ -17,16 +17,11 @@ export const store = new Vuex.Store({
     modules: {
 
       alert,
-      auth,
+      authenticate,
       route,
       redirecter,
       paginate,
-
-        
-
+      
     },
-    actions:{      
-      
-      
-    }
+   
 });

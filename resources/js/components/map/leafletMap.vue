@@ -1,10 +1,9 @@
 <template>
-    <div>
+    <div>        
         <l-map             
             style="height: 500px; width: 100%"
             :zoom="zoom"     
-            :bounds="view"
-            :max-bounds="view"
+            :bounds="view"                   
             :center="center"   
             @click="emitCoordinates"
         >                    
@@ -35,7 +34,8 @@ export default {
     },
     
     methods:{
-        emitCoordinates(event){            
+        emitCoordinates(event){ 
+            console.log(event); 
             this.$emit(
                 'input',
                 {

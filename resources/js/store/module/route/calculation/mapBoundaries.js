@@ -1,9 +1,15 @@
+
+const MAPINIT_LOW_LAT = 43;
+const MAPINIT_LOW_LNG = -9;
+const MAPINIT_HIGH_LAT = 55;
+const MAPINIT_HIGH_LNG = 17;
+
 export default {
     namespaced: true,
         
-    state : {
-        LOWER_COORDINATES : { latitude:9999999, longtitude:9999999 },
-        HIGHER_COORDINATES: { latitude:0, longtitude:0 }
+    state : {        
+        LOWER_COORDINATES : { latitude: MAPINIT_LOW_LAT, longtitude: MAPINIT_LOW_LNG },
+        HIGHER_COORDINATES: { latitude: MAPINIT_HIGH_LAT, longtitude: MAPINIT_HIGH_LNG }
     },
     getters : {            
        GET_MAP_BOUNDARIES(state){           
@@ -56,7 +62,14 @@ export default {
                         commit('SET_LOWER_COORDINATES_LONGTITUDE',longtitudeItem) : '' ; 
                 }  
             }
-        }            
+        },
+        reset({commit}){
+            commit('SET_HIGHER_COORDINATES_LATITUDE',-53);
+            commit('SET_HIGHER_COORDINATES_LONGTITUDE',-70);
+            commit('SET_LOWER_COORDINATES_LATITUDE',74);
+            commit('SET_LOWER_COORDINATES_LONGTITUDE',100);
+        }
+            
     }        
 }
 

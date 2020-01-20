@@ -9,7 +9,7 @@
             
 
             <!-- STAP 0 : LAND NAAM EN VERVOER-->
-            <div v-if="stap == 0" key="stap0" class="col-12 stapBlock">
+            <div v-if="subPagePosition == 0" key="stap0" class="col-12 stapBlock">
                     
                     <div class="form-group">
                         <label for="Naamm">Naam van de nieuwe route?</label>
@@ -37,7 +37,7 @@
                             <label for="exampleFormControlTextarea1">Informatie</label>
                             <textarea v-model="create.informatie" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                     </div>       
-                    <button type="button" @click="nextStep(2)" class="btn btn-success">Verder</button>
+                    <button type="button" @click="nextSubPage(2)" class="btn btn-success">Verder</button>
                 </div>
 
 
@@ -45,7 +45,7 @@
 
 
                 <!-- STAP 1 : MAP COORDINATEN -->       
-                <div  class="stapBlock" :class="'col-'+mapsize[0]" v-else-if="stap == 1" key="stap1"> 
+                <div  class="stapBlock" :class="'col-'+mapsize[0]" v-else-if="subPagePosition == 1" key="stap1"> 
                                                             
                    <ul class="list-group">
                             <li v-for="(onderdeel,index) in create.patroon" :key="index" class="list-group-item">
@@ -61,9 +61,14 @@
                             
                         </li>                            
                     </ul> 
-                    <button :class="'btn btn-success mt-3'" @click="prevStep">Terug</button> 
-                    <button :disabled="create.mapClick" :class="'btn btn-'+[create.mapClick ? 'inverse' : 'primary' ]+' mt-3'" @click="puntToevoegenButton">{{create.mapClick ? 'klik op map':'Punt toevoegen'}}</button>     
-                    <button :class="'btn btn-success mt-3'" @click="nextStep">Verder</button>  
+                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                    <button 
+                        :disabled="this.mapClickEnabled"
+                        :class="'btn btn-'+[this.mapClickEnabled ? 'inverse' : 'primary' ]+' mt-3'"
+                        @click="puntToevoegenButton"
+                    >                        
+                        {{this.mapClickEnabled ? 'klik op map':'Punt toevoegen'}}                    
+                    </button>   <button :class="'btn btn-success mt-3'" @click="nextSubPage">Verder</button>  
                 </div>
 
 
@@ -83,8 +88,8 @@
                             </div> 
                         </li> 
                     </ul>                   
-                    <button :class="'btn btn-success mt-3'" @click="prevStep">Terug</button> 
-                    <button :class="'btn btn-primary mt-3'" @click="CreateRoute">Klaar</button> 
+                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                    <button :class="'btn btn-primary mt-3'" @click="CreateRoute(this.$route.params.naam)">Klaar</button> 
                 </div>
            </transition>
 
@@ -92,16 +97,16 @@
 
            
             <transition name="fade-map"  mode="out-in"> 
-                <div :class="'col-'+mapsize[1]" v-if="stap != 0">
+                <div :class="'col-'+mapsize[1]" v-if="subPagePosition != 0">
                     <div class='sticky-top' >
                         <!--filler-->
                         <div class='block' style='height:50px;'></div>
 
                     <!--leafletMap-->
-                    <leafletMap v-model="clickOnMap" >                            
+                    <leafletMap v-model="clickOnMap" :view="getMapBoundaries" >                            
                         <leafletMapMarkers :markers="create.patroon" >                                
                         </leafletMapMarkers>
-                        <leafletMapLines :lines="getPatroonLine" />
+                        <leafletMapLines :lines="getMapLines" />
                     </leafletMap> 
 
                     <app-map-sizer v-model='mapsize'></app-map-sizer>
@@ -116,103 +121,116 @@
 
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 import appMapSizer from '../../layout/mapSizer'
-
 import leafletMap from '../../map/leafletMap'
 import leafletMapMarkers from '../../map/parts/markers'
 import leafletMapLines from '../../map/parts/lines'
 
 export default {
+    
     components:{      
         appMapSizer,
-
-                //map
         leafletMap,
         leafletMapMarkers,
         leafletMapLines,  
     },
     
     data(){return{        
-        punt_toevoegen_button: false,     
+        punt_toevoegen_button: false,   
+        subPagePosition:0,
+        mapClickEnabled:false,  
         mapsize:[6,6],
         clickOnMap:''
     }},
 
     watch :{
         clickOnMap: function(coordinaten){
-            this.$store.commit('route/create/AddPatroon', coordinaten ) 
+            if(this.mapClickEnabled){
+                this.$store.dispatch('route/create/newCoordinates', coordinaten ) 
+            }
+            this.mapClickEnabled = false; 
         }
     },
 
     methods:{
-        CreateRoute(){
-            this.$store.dispatch('route/create/Create');
-        },
+        
         puntToevoegenButton(){
-            this.$store.commit('route/create/mapClickButton');
+             this.mapClickEnabled = !this.mapClickEnabled;   
         },
-        stapEdit(i){
-            this.$store.commit('route/create/stapEdit',i);    
+
+        setsubPagePosition(i){            
+            this.subPagePosition = i    
         },
-        nextStep(){
-            switch(this.stap){
+
+        nextSubPage(){
+            var route = this.$store.state.route.create;  
+            switch(this.subPagePosition){
                 case 0:
-                    if(this.$store.state.route.create.naam.length < 7){
-                        this.$store.dispatch('displayMsg',{text:'De naam is kleiner dan 7 tekens.',type:'danger'})
+                    if(route.naam.length < 7){
+                        this.$store.dispatch('alert/danger','De naam is kleiner dan 7 tekens.')
                         return;
                     }
-                    if(this.$store.state.route.create.land == ''){
-                        this.$store.dispatch('displayMsg',{text:'Geen land gekozen',type:'danger'})
+                    if(route.land == ''){
+                        this.$store.dispatch('alert/danger','Geen land gekozen')
                         return;
                     }
-                    if(this.$store.state.route.create.vervoer == ''){
-                        this.$store.dispatch('displayMsg',{text:'Geen vervoer gekozen.',type:'danger'})
+                    if(route.vervoer == ''){
+                        this.$store.dispatch('alert/danger','Geen vervoer gekozen.')
                         return;
                     }
                     break;
 
                 case 1:                        
-                    for (let index = 0; index < this.$store.state.route.create.patroon.length; index++) {
-                        if(this.$store.state.route.create.patroon[index].naam == ""){
-                            this.$store.dispatch('displayMsg',{text:'Een naam is niet ingevuld.',type:'danger'})
+                    for (let index in route.patroon.length) {
+                        if(route.patroon[index].naam == ""){                            
+                            this.$store.dispatch('alert/danger','Een naam is niet ingevuld.')
                             return;
                         }                        
                     }
-                    if(this.$store.state.route.create.patroon.length < 2){
-                        this.$store.dispatch('displayMsg',{text:'Er is geen route',type:'danger'})
+                    if(route.patroon.length < 2){                        
+                        this.$store.dispatch('alert/danger','Er is geen route')
                         return;
                     }
                     break;
             }
-            this.stapEdit(this.stap+1);
+            this.setsubPagePosition( this.subPagePosition+1 );
         },
 
-        prevStep(){
-            this.stapEdit(this.stap-1);            
-        },              
+        previousStepSubPage(){
+            this.setsubPagePosition( this.subPagePosition-1 );            
+        },                 
        
         delPatroonItem(index){
-            this.$store.commit('route/create/DelPatroon',index);
-            this.$store.dispatch('displayMsg',{text:'Een punt is verwijderd.',type:'success'})
-        }
+            this.$store.dispatch('route/create/removeCoordinate',index);
+            this.$store.dispatch('alert/success','Een punt is verwijderd.')
+        },         
+
+        ...mapActions({
+            CreateRoute : 'route/create/save'
+        }),
+
+        //operating Functions
+        dispatch(route,parameter){
+            this.$store.dispatch(route,parameter,{root:true});
+        },
     },
 
     computed:{    
-        stap(){
-             return this.$store.state.route.create.stap
-        },     
-
-        ...mapGetters('route/create',[            
-            'getGegevens', 'getPatroonLine','getBounds'          
-        ]),        
-        
-
+           
         ...mapState({
             create : state => state.route.create,
             details : state => state.route.details
         }),
+        ...mapGetters({            
+            hasRouteLoaded: 'route/create/hasRouteLoaded',
+            getMapLines: 'route/create/mapLines/GET_MAP_LINES',
+            getMapBoundaries: 'route/create/mapBoundaries/GET_MAP_BOUNDARIES',
+        }),  
         
+    },
+    created(){
+        this.$store.dispatch('route/create/new');
     }
 
 
