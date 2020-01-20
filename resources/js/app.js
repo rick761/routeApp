@@ -13,6 +13,14 @@ Vue.component('App', App);
 Vue.use(VueAxios, axios);
 Vue.use(VueRouter);
 
+Vue.config.errorHandler = (err, vm, info) =>  {
+
+}
+
+window.onerror = function(message, source, lineno, colno, error) {
+  // TODO: write any custom logic or logs the error
+};
+
 const router = new VueRouter({
     mode: 'history',
     routes

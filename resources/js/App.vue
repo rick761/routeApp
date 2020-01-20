@@ -1,15 +1,13 @@
 <template>
     <div>       
-        <app-header/>              
-        <app-alert/>                 
-        <redirecter/>
-        
-        <transition name="fade"  mode="out-in">
-            <router-view/>
-        </transition>
-
-        
-
+        <errorCapture>
+            <app-header/>              
+            <app-alert/>                 
+            <redirecter/>     
+            <transition name="fade"  mode="out-in">
+                <router-view/>
+            </transition>
+        </errorCapture>
     </div>    
 </template>
 
@@ -17,17 +15,19 @@
 import HeaderComponent from './components/layout/header'
 import AlertComponent from './components/layout/alert'
 import redirecter from './components/mechanism/redirecter'
+import errorCapture from './components/mechanism/errorCapture'
 
 export default {     
     components: {
         appHeader : HeaderComponent, 
         appAlert: AlertComponent,
-        redirecter       
+        redirecter ,
+        errorCapture      
     }, 
     
     created(){        
         this.$store.dispatch('authenticate/load');                      
-    },     
+    },      
 }
 </script>
 
