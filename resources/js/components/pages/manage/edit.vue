@@ -211,7 +211,7 @@ export default {
         }),
 
         ...mapGetters({            
-            hasRouteLoaded: 'route/edit/hasRouteLoaded',
+            hasRouteLoaded: 'route/edit/IS_ROUTE_LOADED',
             getMapLines: 'route/edit/mapLines/GET_MAP_LINES',
             getMapBoundaries: 'route/edit/mapBoundaries/GET_MAP_BOUNDARIES',
         }),                             

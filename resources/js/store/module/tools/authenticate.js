@@ -9,11 +9,11 @@ export default {
         AUTHENTICATED_USER:{}
     },
     getters : {
-        isLoggedIn(state){
+        IS_LOGGED_IN(state){
             console.log(state.AUTHENTICATED_USER);
             return !(Object.keys(state.AUTHENTICATED_USER).length === 0);
         },   
-        getAuthenticatedUser(state){
+        GET_USER(state){
             return state.AUTHENTICATED_USER;
         }  
     },

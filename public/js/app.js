@@ -1990,8 +1990,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
-    isLoggedIn: 'authenticate/isLoggedIn',
-    getAuthUser: 'authenticate/getAuthenticatedUser'
+    isLoggedIn: 'authenticate/IS_LOGGED_IN',
+    getAuthUser: 'authenticate/GET_USER'
   })),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])({
     loginPopup: 'authenticate/loginPopup',
@@ -2374,8 +2374,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   watch: {
     mustRedirect: function mustRedirect(next, prev) {
       if (next && !prev) {
-        console.log('NAVIGATING TO ', this.$store.state.redirecter.redirectUrl);
-        this.$router.push(this.$store.state.redirecter.redirectUrl);
+        var url = this.$store.state.redirecter.redirectUrl;
+        console.log('NAVIGATING TO ', url);
+        this.$router.push(url);
       }
 
       this.$store.dispatch('redirecter/redirectFinished');
@@ -3062,7 +3063,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return state.route.details;
     }
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
-    hasRouteLoaded: 'route/edit/hasRouteLoaded',
+    hasRouteLoaded: 'route/edit/IS_ROUTE_LOADED',
     getMapLines: 'route/edit/mapLines/GET_MAP_LINES',
     getMapBoundaries: 'route/edit/mapBoundaries/GET_MAP_BOUNDARIES'
   })),
@@ -48622,8 +48623,9 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('App', _App_vue__WEBPACK_IMPORTED_MODULE_4__["default"]);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_2___default.a, axios__WEBPACK_IMPORTED_MODULE_3___default.a);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
+/*Vue.config.errorHandler = (err, vm, info) =>  {
 
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.config.errorHandler = function (err, vm, info) {};
+}*/
 
 window.onerror = function (message, source, lineno, colno, error) {// TODO: write any custom logic or logs the error
 };
@@ -50556,7 +50558,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
     patroon: []
   },
   getters: {
-    hasRouteLoaded: function hasRouteLoaded(state) {
+    IS_ROUTE_LOADED: function IS_ROUTE_LOADED(state) {
       return state.land != '' || state.vervoer != '' || state.naam != '';
     }
   },
@@ -50905,11 +50907,11 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
     AUTHENTICATED_USER: {}
   },
   getters: {
-    isLoggedIn: function isLoggedIn(state) {
+    IS_LOGGED_IN: function IS_LOGGED_IN(state) {
       console.log(state.AUTHENTICATED_USER);
       return !(Object.keys(state.AUTHENTICATED_USER).length === 0);
     },
-    getAuthenticatedUser: function getAuthenticatedUser(state) {
+    GET_USER: function GET_USER(state) {
       return state.AUTHENTICATED_USER;
     }
   },

@@ -57,8 +57,8 @@
     export default {         
     computed:{        
         ...mapGetters({
-            isLoggedIn: 'authenticate/isLoggedIn',
-            getAuthUser:'authenticate/getAuthenticatedUser'
+            isLoggedIn: 'authenticate/IS_LOGGED_IN',
+            getAuthUser:'authenticate/GET_USER'
         })
     },
     methods:{

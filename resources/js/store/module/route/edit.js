@@ -23,7 +23,7 @@ export default {
 
 
     getters : {
-        hasRouteLoaded(state){            
+        IS_ROUTE_LOADED(state){            
             return ( state.land != '' || state.vervoer != '' || state.naam != '' );
         },
     },
