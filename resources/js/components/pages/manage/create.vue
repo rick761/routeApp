@@ -50,7 +50,7 @@
                    <ul class="list-group">
                             <li v-for="(onderdeel,index) in create.patroon" :key="index" class="list-group-item">
 
-                            <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delPatroonItem(index)" style="float:right">x</button>
+                            <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delRouteItem(index)" style="float:right">x</button>
                             <label class='pt-2' for="naam2">
                                 Punt {{index+1}} : 
                                 {{ onderdeel.coordinaten[0].toFixed(2)}}
@@ -61,7 +61,7 @@
                             
                         </li>                            
                     </ul> 
-                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                    <button :class="'btn btn-success mt-3'" @click="previousSubPage">Terug</button> 
                     <button 
                         :disabled="this.mapClickEnabled"
                         :class="'btn btn-'+[this.mapClickEnabled ? 'inverse' : 'primary' ]+' mt-3'"
@@ -88,7 +88,7 @@
                             </div> 
                         </li> 
                     </ul>                   
-                    <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                    <button :class="'btn btn-success mt-3'" @click="previousSubPage">Terug</button> 
                     <button :class="'btn btn-primary mt-3'" @click="CreateRoute(this.$route.params.naam)">Klaar</button> 
                 </div>
            </transition>
@@ -137,7 +137,7 @@ export default {
     },
     
     data(){return{        
-        punt_toevoegen_button: false,   
+          
         subPagePosition:0,
         mapClickEnabled:false,  
         mapsize:[6,6],
@@ -159,7 +159,7 @@ export default {
              this.mapClickEnabled = !this.mapClickEnabled;   
         },
 
-        setsubPagePosition(i){            
+        setSubPagePosition(i){            
             this.subPagePosition = i    
         },
 
@@ -167,15 +167,15 @@ export default {
             var route = this.$store.state.route.create;  
             switch(this.subPagePosition){
                 case 0:
-                    if(route.naam.length < 7){
+                    if(lengthSmallerThen(route.naam,7)){
                         this.$store.dispatch('alert/danger','De naam is kleiner dan 7 tekens.')
                         return;
                     }
-                    if(route.land == ''){
+                    if(this.emptyString(route.land)){
                         this.$store.dispatch('alert/danger','Geen land gekozen')
                         return;
                     }
-                    if(route.vervoer == ''){
+                    if(this.emptyString(route.vervoer)){
                         this.$store.dispatch('alert/danger','Geen vervoer gekozen.')
                         return;
                     }
@@ -194,14 +194,14 @@ export default {
                     }
                     break;
             }
-            this.setsubPagePosition( this.subPagePosition+1 );
+            this.setSubPagePosition( this.subPagePosition+1 );
         },
 
-        previousStepSubPage(){
-            this.setsubPagePosition( this.subPagePosition-1 );            
+        previousSubPage(){
+            this.setSubPagePosition( this.subPagePosition-1 );            
         },                 
        
-        delPatroonItem(index){
+        delRouteItem(index){
             this.$store.dispatch('route/create/removeCoordinate',index);
             this.$store.dispatch('alert/success','Een punt is verwijderd.')
         },         
@@ -214,6 +214,12 @@ export default {
         dispatch(route,parameter){
             this.$store.dispatch(route,parameter,{root:true});
         },
+        emptyString(string){
+            return (string == '');
+        },
+        lengthSmallerThen(string,number){
+            return (string.length < number);            
+        }
     },
 
     computed:{    

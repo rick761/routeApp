@@ -2734,7 +2734,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      punt_toevoegen_button: false,
       subPagePosition: 0,
       mapClickEnabled: false,
       mapsize: [6, 6],
@@ -2754,7 +2753,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     puntToevoegenButton: function puntToevoegenButton() {
       this.mapClickEnabled = !this.mapClickEnabled;
     },
-    setsubPagePosition: function setsubPagePosition(i) {
+    setSubPagePosition: function setSubPagePosition(i) {
       this.subPagePosition = i;
     },
     nextSubPage: function nextSubPage() {
@@ -2762,17 +2761,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       switch (this.subPagePosition) {
         case 0:
-          if (route.naam.length < 7) {
+          if (lengthSmallerThen(route.naam, 7)) {
             this.$store.dispatch('alert/danger', 'De naam is kleiner dan 7 tekens.');
             return;
           }
 
-          if (route.land == '') {
+          if (this.emptyString(route.land)) {
             this.$store.dispatch('alert/danger', 'Geen land gekozen');
             return;
           }
 
-          if (route.vervoer == '') {
+          if (this.emptyString(route.vervoer)) {
             this.$store.dispatch('alert/danger', 'Geen vervoer gekozen.');
             return;
           }
@@ -2795,12 +2794,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           break;
       }
 
-      this.setsubPagePosition(this.subPagePosition + 1);
+      this.setSubPagePosition(this.subPagePosition + 1);
     },
-    previousStepSubPage: function previousStepSubPage() {
-      this.setsubPagePosition(this.subPagePosition - 1);
+    previousSubPage: function previousSubPage() {
+      this.setSubPagePosition(this.subPagePosition - 1);
     },
-    delPatroonItem: function delPatroonItem(index) {
+    delRouteItem: function delRouteItem(index) {
       this.$store.dispatch('route/create/removeCoordinate', index);
       this.$store.dispatch('alert/success', 'Een punt is verwijderd.');
     }
@@ -2812,6 +2811,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$store.dispatch(route, parameter, {
         root: true
       });
+    },
+    emptyString: function emptyString(string) {
+      return string == '';
+    },
+    lengthSmallerThen: function lengthSmallerThen(string, number) {
+      return string.length < number;
     }
   }),
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
@@ -20263,7 +20268,7 @@ var render = function() {
                               staticStyle: { float: "right" },
                               on: {
                                 click: function($event) {
-                                  return _vm.delPatroonItem(index)
+                                  return _vm.delRouteItem(index)
                                 }
                               }
                             },
@@ -20322,7 +20327,7 @@ var render = function() {
                     "button",
                     {
                       class: "btn btn-success mt-3",
-                      on: { click: _vm.previousStepSubPage }
+                      on: { click: _vm.previousSubPage }
                     },
                     [_vm._v("Terug")]
                   ),
@@ -20426,7 +20431,7 @@ var render = function() {
                     "button",
                     {
                       class: "btn btn-success mt-3",
-                      on: { click: _vm.previousStepSubPage }
+                      on: { click: _vm.previousSubPage }
                     },
                     [_vm._v("Terug")]
                   ),
