@@ -91,7 +91,7 @@ export default {
                 patroon : state.patroon,
             }            
 
-            var url = window.location.origin+'/api/route/create'
+            var url = window.location.origin+'/api/route/create';
             axios.post(url, postObj).then(response => {      
 
                 if(response.data == "error"){                  

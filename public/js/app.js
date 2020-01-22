@@ -2970,7 +2970,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       subPagePosition: 0,
       mapClickEnabled: false,
-      punt_toevoegen_button: false,
       mapsize: [6, 6],
       clickOnMap: ''
     };
@@ -2985,7 +2984,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   methods: _objectSpread({
-    setsubPagePosition: function setsubPagePosition(i) {
+    setSubPagePosition: function setSubPagePosition(i) {
       this.subPagePosition = i;
     },
     puntToevoegenButton: function puntToevoegenButton() {
@@ -3029,12 +3028,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           break;
       }
 
-      this.setsubPagePosition(this.subPagePosition + 1);
+      this.setSubPagePosition(this.subPagePosition + 1);
     },
-    previousStepSubPage: function previousStepSubPage() {
-      this.setsubPagePosition(this.subPagePosition - 1);
+    previousSubPage: function previousSubPage() {
+      this.setSubPagePosition(this.subPagePosition - 1);
     },
-    delPatroonItem: function delPatroonItem(index) {
+    delRouteItem: function delRouteItem(index) {
       this.$store.dispatch('route/edit/removeCoordinate', index);
       this.$store.dispatch('alert/success', 'Een punt is verwijderd.');
     }
@@ -20754,7 +20753,7 @@ var render = function() {
                                 staticStyle: { float: "right" },
                                 on: {
                                   click: function($event) {
-                                    return _vm.delPatroonItem(index)
+                                    return _vm.delRouteItem(index)
                                   }
                                 }
                               },
@@ -20824,7 +20823,7 @@ var render = function() {
                       "button",
                       {
                         class: "btn btn-success mt-3",
-                        on: { click: _vm.previousStepSubPage }
+                        on: { click: _vm.previousSubPage }
                       },
                       [_vm._v("Terug")]
                     ),
@@ -20935,7 +20934,7 @@ var render = function() {
                       "button",
                       {
                         class: "btn btn-success mt-3",
-                        on: { click: _vm.previousStepSubPage }
+                        on: { click: _vm.previousSubPage }
                       },
                       [_vm._v("Terug")]
                     ),

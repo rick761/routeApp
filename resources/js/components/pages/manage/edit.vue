@@ -5,13 +5,16 @@
         <div class='row'>                
            <transition name="fade"  mode="out-in">  
             
-            <div  v-if="subPagePosition == 0" key="stap0" class="col-12 stapBlock">                
+            <div  v-if="subPagePosition == 0" key="stap0" class="col-12 stapBlock"> 
+
                 <div class="form-group">
                     <label for="Naam">Naam van de route?</label>
                     <input type="text" class="form-control" id="Naam" placeholder="Naam van de Route"  v-model="edit.naam" >                
                 </div> 
+
                 <div class="row">
                     <div class="form-group col-6" >
+
                         <label for="exampleFormControlSelect1">In welk land?</label>
                         <select v-model="edit.land" class="form-control" id="exampleFormControlSelect1">
                         <option v-for="(land,i) in details.landen" :key="i">
@@ -19,6 +22,7 @@
                         </option>                    
                         </select>
                     </div> 
+
                     <div class="form-group col-6" >
                         <label for="exampleFormControlSelect1">Met welk vervoer?</label>
                         <select v-model="edit.vervoer" class="form-control" id="exampleFormControlSelect1">
@@ -39,7 +43,7 @@
                 <ul class="list-group">
 
                     <li v-for="(onderdeel,index) in edit.patroon" :key="index" class="list-group-item">
-                        <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delPatroonItem(index)" style="float:right">x</button>
+                        <button class="btn btn-sm btn-inverse btn-danger m-1" @click="delRouteItem(index)" style="float:right">x</button>
                         <label class='pt-2' :for="'naam'+index">
                             Punt {{index+1}} : {{ onderdeel.coordinaten[0].toFixed(2)}} , {{ onderdeel.coordinaten[1].toFixed(2)}}
                         </label>
@@ -47,7 +51,7 @@
                     </li>                     
 
                 </ul> 
-                <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                <button :class="'btn btn-success mt-3'" @click="previousSubPage">Terug</button> 
                 <button :disabled="this.mapClickEnabled" :class="'btn btn-'+[this.mapClickEnabled ? 'inverse' : 'primary' ]+' mt-3'" @click="puntToevoegenButton">                        
                     {{this.mapClickEnabled ? 'klik op map':'Punt toevoegen'}}                    
                 </button>     
@@ -65,7 +69,7 @@
                     </li> 
 
                 </ul>                   
-                <button :class="'btn btn-success mt-3'" @click="previousStepSubPage">Terug</button> 
+                <button :class="'btn btn-success mt-3'" @click="previousSubPage">Terug</button> 
                 <button :class="'btn btn-primary mt-3'" @click="SaveRoute(this.$route.params.naam)">Klaar</button> 
             </div>
         </transition>
@@ -73,18 +77,14 @@
           
             <transition name="fade-map"  mode="out-in"> 
                 <div :class="'col-'+mapsize[1]" v-if="subPagePosition != 0">
-
-                    <div class='sticky-top' >
-                        
+                    <div class='sticky-top' >                        
                         <div class='block' style='height:50px;'></div>
-
                         
                         <leafletMap v-model="clickOnMap" :view="getMapBoundaries" >                            
                             <leafletMapMarkers :markers="edit.patroon" >                                
                             </leafletMapMarkers>
                             <leafletMapLines :lines="getMapLines" />
-                        </leafletMap> 
-                        
+                        </leafletMap>                         
                         
                         <app-map-sizer v-model='mapsize'></app-map-sizer>
                     </div>                    
@@ -116,8 +116,7 @@ export default {
 
     data(){ return{    
         subPagePosition:0,
-        mapClickEnabled:false,
-        punt_toevoegen_button: false,
+        mapClickEnabled:false,        
         mapsize:[6,6],        
         clickOnMap:'',           
     }},
@@ -133,8 +132,8 @@ export default {
 
     methods:{  
 
-        setsubPagePosition(i){            
-            this.subPagePosition = i    
+        setSubPagePosition(i){       
+            this.subPagePosition = i   
         },        
 
         puntToevoegenButton(){
@@ -173,14 +172,14 @@ export default {
                     }
                     break;
             }            
-            this.setsubPagePosition( this.subPagePosition+1 );
+            this.setSubPagePosition( this.subPagePosition+1 );
         },
 
-        previousStepSubPage(){
-            this.setsubPagePosition( this.subPagePosition-1 );            
+        previousSubPage(){
+            this.setSubPagePosition( this.subPagePosition-1 );            
         },              
        
-        delPatroonItem(index){
+        delRouteItem(index){
             this.$store.dispatch('route/edit/removeCoordinate',index);
             this.$store.dispatch('alert/success','Een punt is verwijderd.')
         },          

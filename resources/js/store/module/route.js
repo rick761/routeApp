@@ -61,8 +61,7 @@ export default {
         }, 
 
         load( {commit, dispatch, rootState, state } ) {  
-            var paginate = rootState.paginate.CURRENT_PAGE;  
-            
+            var paginate = rootState.paginate.CURRENT_PAGE;              
             var url = window.location.origin+'/api/route/get?page='+paginate;    
 
             axios.get( url ).then( response => {      
