@@ -50175,7 +50175,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
-    MULTIPLE_DISTANCES: []
+    MULTIPLE_DISTANCES: [],
+    helper: {
+      calculateDifferencelatitude: function calculateDifferencelatitude(previousCoordinate, coordinate) {
+        var calculation = Math.abs(coordinate.latitude - previousCoordinate.latitude);
+        calculation = Math.abs(calculation * 110.57);
+        return Math.pow(calculation, 2);
+      },
+      calculateDifferencelongtitude: function calculateDifferencelongtitude(previousCoordinate, coordinate) {
+        var calculation = Math.abs(coordinate.longtitude - previousCoordinate.longtitude);
+        calculation = Math.abs(calculation * (111.320 * Math.cos(coordinate.longtitude)));
+        return Math.pow(calculation, 2);
+      }
+    }
   },
   getters: {
     GET_DISTANCES: function GET_DISTANCES(state) {
@@ -50203,21 +50215,17 @@ __webpack_require__.r(__webpack_exports__);
     calculateMultipleRoutes: function calculateMultipleRoutes(_ref, routes) {
       var dispatch = _ref.dispatch,
           commit = _ref.commit;
-      var filteredRoutes = [];
       commit('DELETE_DISTANCES');
 
       for (var index in routes) {
-        filteredRoutes.push(routes[index].patroon);
-      }
-
-      for (var index in filteredRoutes) {
-        dispatch('calculateRouteFromRoutes', filteredRoutes[index]);
+        dispatch('calculateRoute', routes[index].patroon);
       }
 
       commit('DISTANCES_FORMAT_FIX');
     },
-    calculateRouteFromRoutes: function calculateRouteFromRoutes(_ref2, routeCoordinateArray) {
-      var commit = _ref2.commit;
+    calculateRoute: function calculateRoute(_ref2, routeCoordinateArray) {
+      var state = _ref2.state,
+          commit = _ref2.commit;
       var previousCoordinate;
       var distance = 0;
       routeCoordinateArray.forEach(function (CoordinatesObject) {
@@ -50227,21 +50235,9 @@ __webpack_require__.r(__webpack_exports__);
         };
 
         if (previousCoordinate) {
-          var calculateDifference = {
-            latitude: function latitude() {
-              var calculation;
-              calculation = Math.abs(coordinate.latitude - previousCoordinate.latitude);
-              calculation = Math.abs(calculation * 110.57);
-              return Math.pow(calculation, 2);
-            },
-            longtitude: function longtitude() {
-              var calculation;
-              calculation = Math.abs(coordinate.longtitude - previousCoordinate.longtitude);
-              calculation = Math.abs(calculation * (111.320 * Math.cos(coordinate.longtitude)));
-              return Math.pow(calculation, 2);
-            }
-          };
-          var result = Math.sqrt(calculateDifference.latitude() + calculateDifference.longtitude());
+          var differenceLatitude = state.helper.calculateDifferencelatitude(previousCoordinate, coordinate);
+          var differenceLongtitude = state.helper.calculateDifferencelongtitude(previousCoordinate, coordinate);
+          var result = Math.sqrt(differenceLatitude + differenceLongtitude);
           distance += result;
         }
 

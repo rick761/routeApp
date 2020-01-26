@@ -1,7 +1,23 @@
 export default {
     namespaced: true,
     state : {
-        MULTIPLE_DISTANCES:[]
+        MULTIPLE_DISTANCES:[],
+
+        helper: {
+            calculateDifferencelatitude: (previousCoordinate,coordinate) => {                
+                var calculation = Math.abs( coordinate.latitude - previousCoordinate.latitude );
+                calculation = Math.abs( calculation * 110.57 );
+
+                return Math.pow( calculation, 2 );
+            },
+            calculateDifferencelongtitude : (previousCoordinate,coordinate) => {                
+                var calculation = Math.abs( coordinate.longtitude - previousCoordinate.longtitude );
+                calculation = Math.abs( calculation * ( 111.320*Math.cos( coordinate.longtitude ) ) );  
+
+                return Math.pow( calculation, 2 );   
+            }
+        }
+
     },
 
     getters : {
@@ -15,6 +31,7 @@ export default {
            state.MULTIPLE_DISTANCES.push(distance);
            console.log('ADD_DISTANCE_TO_DISTANCES');
         },
+
         DISTANCES_FORMAT_FIX(state){
             for(var i in state.MULTIPLE_DISTANCES){ 
                 //convert to 3 behind comma (also switched '.' to ',')               
@@ -22,45 +39,45 @@ export default {
             }
             console.log('DISTANCES_FORMAT_FIX');
         },
+
         DELETE_DISTANCES(state){
             state.MULTIPLE_DISTANCES=[];
         }
+
     },
 
     actions : {
-        calculateMultipleRoutes({dispatch,commit},routes){
-            var filteredRoutes = [];
+        calculateMultipleRoutes({dispatch,commit},routes){           
 
             commit('DELETE_DISTANCES');   
-            for (var index in routes) 
-                filteredRoutes.push( routes[index].patroon);
-            for(var index in filteredRoutes)
-                dispatch('calculateRouteFromRoutes', filteredRoutes[index]);
-            commit('DISTANCES_FORMAT_FIX')
+                       
+            for(var index in routes)
+                dispatch('calculateRoute', routes[index].patroon);
+
+            commit('DISTANCES_FORMAT_FIX');
         },
 
-        calculateRouteFromRoutes({commit},routeCoordinateArray){            
+        calculateRoute({state,commit},routeCoordinateArray){            
             var previousCoordinate;
-            var distance =0;
+            var distance = 0;
 
             routeCoordinateArray.forEach(CoordinatesObject => {
-                var coordinate = { latitude: CoordinatesObject.coordinaten[0], longtitude: CoordinatesObject.coordinaten[1]};
-               
-                if(previousCoordinate){
-                    var calculateDifference = {
-                        latitude: () => {
-                            var calculation; calculation = Math.abs( coordinate.latitude - previousCoordinate.latitude ); calculation = Math.abs( calculation * 110.57 );
-                            return Math.pow( calculation, 2 );
-                        },
-                        longtitude : () => {
-                            var calculation;calculation = Math.abs( coordinate.longtitude - previousCoordinate.longtitude );calculation = Math.abs( calculation * ( 111.320*Math.cos( coordinate.longtitude ) ) );                            
-                            return Math.pow( calculation, 2 );   
-                        }
-                    };              
-                    var result = Math.sqrt( calculateDifference.latitude() + calculateDifference.longtitude() );                 
+
+                var coordinate = { 
+                    latitude: CoordinatesObject.coordinaten[0],
+                    longtitude: CoordinatesObject.coordinaten[1]
+                };
+
+                if(previousCoordinate){       
+                    var differenceLatitude = state.helper.calculateDifferencelatitude(previousCoordinate,coordinate)  ;
+                    var differenceLongtitude = state.helper.calculateDifferencelongtitude(previousCoordinate,coordinate) ;
+                    var result = Math.sqrt( differenceLatitude + differenceLongtitude );                                  
+
                     distance += result;                    
-                }                
-                previousCoordinate = coordinate                
+                }
+
+                previousCoordinate = coordinate;
+
             })
             commit('ADD_DISTANCE_TO_DISTANCES', distance);              
         }

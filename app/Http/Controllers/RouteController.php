@@ -14,24 +14,17 @@ const ITEMS_PER_PAGE = 10;
 class RouteController extends Controller
 {
     public function one(Request $request){
-        $route = App\Route::where('id',$request->id)
-                            ->with('user:id,name');
+        $route = App\Route::where('id',$request->id)->with('user:id,name');
                             
         $count = $route->count();
-
         if ($count == 1){
-
-            //viewed page
-            
-            
+            //viewed page         
             if(Auth::check()) {            
                 $view = App\View::firstOrCreate([
                     'user_id'=> Auth::user()->id,       
                     'route_id' => $route->first()->id
                 ])->save();
             }   
-
-
                       
             return $route->first();
         } 
@@ -61,9 +54,8 @@ class RouteController extends Controller
     }
 
     public function mijn(){
-        $routes = App\Route::where('user_id', Auth::User()->id) 
-                     
-            ->get();
+        $routes = App\Route::where('user_id', Auth::User()->id)                      
+        ->get();
         return $routes;
     }
 
