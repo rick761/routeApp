@@ -1,23 +1,16 @@
-import Vue from 'vue'
-import VueAxios from 'vue-axios';
-import axios from 'axios';
 import mapBoundaries from './calculation/mapBoundaries'
 import mapLines from './calculation/mapLines'
-
-Vue.use(VueAxios, axios)
+import request from '../tools/request'
 
 export default {
     namespaced: true,
-
     modules:{
         mapBoundaries,
-        mapLines
+        mapLines,
+        request
     },
     state:{        
         route : []   
-    },
-    getters:{        
-        
     },    
     mutations:{
         SET_ROUTE(state, route){
@@ -25,25 +18,15 @@ export default {
             console.log('SET_ROUTE');
         }
     },
-
     actions:{
+        async viewRoute({state, commit, dispatch},payload){   
+            var url = '/api/route/getOne?id='+payload;
 
-        viewRoute({commit, dispatch},payload){   
-            var oneRouteUrl = window.location.origin+'/api/route/getOne?id='+payload;
-
-            axios.get(oneRouteUrl).then(response => {   
-                //<!-- fix dit in laravel
-                response.data.patroon = JSON.parse( response.data.patroon );
-                 //-->                
-                commit('SET_ROUTE',response.data);
-
-                dispatch('mapBoundaries/createMapBoundaries', response.data.patroon );
-                dispatch('mapLines/createMapLines', response.data.patroon );
-
-                                   
-            })
-        },
-
+            await dispatch('request/get', url );                              
+            commit('SET_ROUTE',state.request.RESPONSE);            
+            dispatch('mapBoundaries/createMapBoundaries', state.route.patroon );
+            dispatch('mapLines/createMapLines', state.route.patroon );                                  
+        }
     }
       
 

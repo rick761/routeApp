@@ -11,7 +11,9 @@ import my from './route/my'
 import mapBoundaries from './route/calculation/mapBoundaries'
 import mapLines from './route/calculation/mapLines'
 import coordinateDistance from './route/calculation/coordinateDistance'
+import request from './tools/request'
 
+const ROOT = {root:true};
 
 Vue.use(VueAxios, axios)
 
@@ -25,6 +27,7 @@ export default {
         create,
         details,
         my,
+        request,
 
         //calculation modules
         mapBoundaries,
@@ -34,7 +37,8 @@ export default {
 
     state : {         
         ROUTES: [],        
-        SHOWN_ROUTE :[],     
+        SHOWN_ROUTE :[],
+           
     },   
 
     mutations:{
@@ -60,16 +64,16 @@ export default {
             commit('SET_ROUTES',payload);                         
         }, 
 
-        load( {commit, dispatch, rootState, state } ) {  
+        async load( {commit, dispatch, rootState, state } ) {  
             var paginate = rootState.paginate.CURRENT_PAGE;              
-            var url = window.location.origin+'/api/route/get?page='+paginate;    
-
-            axios.get( url ).then( response => {      
-
-                commit('SET_ROUTES', response.data.data); 
-                commit('ROUTE_COORDINATES_PARSE_JSON');                
-                dispatch('coordinateDistance/calculateMultipleRoutes', state.ROUTES);                
-            });    
+            var url = '/api/route/get?page='+paginate;  
+            
+            await dispatch('request/get', url );        
+            console.log(state.request.RESPONSE);        
+            commit('SET_ROUTES', state.request.RESPONSE ); 
+            commit('ROUTE_COORDINATES_PARSE_JSON');                
+            dispatch('coordinateDistance/calculateMultipleRoutes', state.ROUTES);                
+              
         },       
         
         hoverOverRoute({state,commit,dispatch},index) {  

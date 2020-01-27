@@ -1,7 +1,12 @@
 export default {
     namespaced: true,
     state : {
-        MAP_LINES:[]
+        MAP_LINES:[],
+        _f:{
+            isZero(number){
+                return number === 0;
+            }
+        }
     },
     getters : {
         GET_MAP_LINES(state){
@@ -23,14 +28,15 @@ export default {
         }
     },
     actions : {
-        createMapLines({commit},coordinates){
+        createMapLines({state,commit},coordinates){
             commit('REMOVE_MAP_LINES');               
 
             for (let index in coordinates) {  
+
                 var latitude = coordinates[index].coordinaten[0];  
                 var longtitude = coordinates[index].coordinaten[1];                 
 
-                if( !( latitude == 0 && longtitude == 0 ) )
+                if( !( state._f.isZero(latitude) && state._f.isZero(longtitude) ) )
                 {                    
                     commit('ADD_MAP_LINE',coordinates[index].coordinaten)
                 }                              

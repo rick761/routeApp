@@ -3,7 +3,7 @@ export default {
     state : {
         MULTIPLE_DISTANCES:[],
 
-        helper: {
+        _f: {
             calculateDifferencelatitude: (previousCoordinate,coordinate) => {                
                 var calculation = Math.abs( coordinate.latitude - previousCoordinate.latitude );
                 calculation = Math.abs( calculation * 110.57 );
@@ -69,8 +69,8 @@ export default {
                 };
 
                 if(previousCoordinate){       
-                    var differenceLatitude = state.helper.calculateDifferencelatitude(previousCoordinate,coordinate)  ;
-                    var differenceLongtitude = state.helper.calculateDifferencelongtitude(previousCoordinate,coordinate) ;
+                    var differenceLatitude = state._f.calculateDifferencelatitude(previousCoordinate,coordinate)  ;
+                    var differenceLongtitude = state._f.calculateDifferencelongtitude(previousCoordinate,coordinate) ;
                     var result = Math.sqrt( differenceLatitude + differenceLongtitude );                                  
 
                     distance += result;                    

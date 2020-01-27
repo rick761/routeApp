@@ -11,7 +11,8 @@ import mapLines from './calculation/mapLines'
 Vue.use(VueAxios, axios)
 
 export default {
-    namespaced: true,   
+    namespaced: true,  
+     
     modules:{
         mapBoundaries,
         mapLines
@@ -81,7 +82,7 @@ export default {
             dispatch('mapLines/removeMapLines');  
         },
 
-        save({state,commit,dispatch}){            
+        save({state,dispatch}){            
             
             var postObj = {
                 informatie : state.informatie,

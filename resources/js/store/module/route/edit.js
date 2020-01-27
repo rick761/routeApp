@@ -3,14 +3,19 @@ import VueAxios from 'vue-axios';
 import axios from 'axios';
 import mapBoundaries from './calculation/mapBoundaries'
 import mapLines from './calculation/mapLines'
+import request from '../tools/request'
+
+const ROOT = {root:true};
 
 Vue.use(VueAxios, axios)
 
 export default {    
     namespaced: true,
+
     modules:{
         mapBoundaries,
-        mapLines
+        mapLines,
+        request
     },
 
     state : {        
@@ -18,7 +23,10 @@ export default {
         vervoer:'',
         naam:'',
         informatie:'',     
-        patroon:[]      
+        patroon:[],
+        _const : {
+            ROOT : {root:true}
+        }      
     },
 
 
@@ -27,6 +35,7 @@ export default {
             return ( state.land != '' || state.vervoer != '' || state.naam != '' );
         },
     },
+
     mutations : {     
         ADD_ROUTE_COORDINATES(state,coordinate){
             var coordinateObject = {
@@ -56,7 +65,7 @@ export default {
             state.land = route.land;
             state.naam = route.naam;
             state.vervoer = route.vervoer;
-            state.patroon = JSON.parse(route.patroon);  
+            state.patroon = route.patroon;  
 
             console.log('SET_ROUTE');
         }
@@ -69,51 +78,61 @@ export default {
             dispatch('mapLines/createMapLines', state.patroon  );            
         },
 
-        removeCoordinate({commit,dispatch,state},index){
-            console.log(index);
+        removeCoordinate({commit,dispatch,state},index){            
             commit('DELETE_ROUTE_COORDINATES', index );
             dispatch('mapBoundaries/createMapBoundaries', state.patroon );
             dispatch('mapLines/createMapLines', state.patroon  );   
         },
 
-        save({state,dispatch,commit}, naam){            
-            let postObj = {
-                toEdit: naam ,
-                toSend: {
-                    informatie: state.informatie,
-                    land:       state.land,
-                    naam:       state.naam,
-                    vervoer:    state.vervoer,
-                    patroon:    state.patroon
-                }
-            };        
+        async save({state,dispatch,commit}, naam){  
+            var POST = {
+                url : '/api/route/edit/save',
+                data : {
+                    toEdit: naam ,
+                    toSend: {
+                        informatie: state.informatie,
+                        land:       state.land,
+                        naam:       state.naam,
+                        vervoer:    state.vervoer,
+                        patroon:    state.patroon
+                    }
+                }     
+            }         
+            await dispatch('request/post', POST);
+            response = state.request.RESPONSE;
 
-           //apiCall
-            axios.post(window.location.origin+'/api/route/edit/save', postObj).then(response => {               
-                if(response.data == "error"){                    
-                    dispatch('alert/danger','Er is iets fout gegaan.',{root:true} );                    
-                    return;
-                }                                             
-                dispatch('alert/success','Route is aangepast.',{root:true} );
-                dispatch('redirecter/redirect','/manage', {root:true} );
-                commit('RESET_ROUTE');   
-             })             
-            
+            if(response == "error") {                
+                dispatch('alert/danger','Er is iets fout gegaan.', ROOT);                    
+                return;
+            }
+
+            dispatch('alert/success','Route is aangepast.', ROOT );
+            dispatch('redirecter/redirect','/manage', ROOT );
+            commit('RESET_ROUTE');
+           
         },
 
-        load({dispatch,commit}, payload){   
-            axios.post(window.location.origin+'/api/route/edit/load', {naam: payload}).then(response => {                
-                if(typeof response.data == 'object'){
-                    commit("SET_ROUTE", response.data);
-                    var routeCoordinates = JSON.parse(response.data.patroon);
-                    dispatch('mapBoundaries/createMapBoundaries', routeCoordinates );
-                    dispatch('mapLines/createMapLines', routeCoordinates );
-                } else {
-                    dispatch( 'alert/danger','Error bij het laden', {root:true});
-                }
-            });
+        async load({state,dispatch,commit}, payload){   
+            var POST = {
+                url : '/api/route/edit/load',
+                data : {naam: payload}
+            };
+
+            await dispatch('request/post', POST);            
+            var response = state.request.RESPONSE;
+            
+            if(typeof response != 'object'){
+                dispatch( 'alert/danger','Error bij het laden', ROOT);
+                return
+            }
+
+            commit("SET_ROUTE", response);            
+            dispatch('mapBoundaries/createMapBoundaries', response.patroon );
+            dispatch('mapLines/createMapLines', response.patroon );
+           
         }
         
+
     },
     
 

@@ -7,8 +7,11 @@ import authenticate from './module/tools/authenticate'
 import redirecter from './module/tools/redirecter'
 import paginate from './module/tools/paginate'
 
+
 // modules
 import route from './module/route'
+
+
 
 Vue.use(Vuex);
 
@@ -22,6 +25,6 @@ export const store = new Vuex.Store({
       redirecter,
       paginate,
       
+      
     },
-   
 });

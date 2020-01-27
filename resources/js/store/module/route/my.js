@@ -2,11 +2,14 @@ import Vue from 'vue'
 import VueAxios from 'vue-axios';
 import axios from 'axios';
 import coordinateDistance from './calculation/coordinateDistance'
+import request from '../tools/request'
+
 
 export default {
     namespaced: true,
     modules:{
-        coordinateDistance
+        coordinateDistance,
+        request
     },
     state : {
         ROUTES:[]
@@ -27,29 +30,31 @@ export default {
     },
     actions : {     
 
-        delete({dispatch},payload){
-            axios
-            .post(window.location.origin+'/api/route/del', {naam: payload})
-            .then(response => {        
-
-                if(response.data)
-                    dispatch('alert/success','Er is een route verwijderd',{root:true} );
+       async delete({dispatch,state},payload){
+            var POST = {
+                url : '/api/route/del',
+                data : { naam: '' }
+            }                        
+            await dispatch('request/post', POST );    
+            response = state.request.RESPONSE;
+            if( response )
+                dispatch('alert/success','Er is een route verwijderd',{root:true} );
                  
-                if(! response.data )
-                    dispatch('alert/danger','Er is iets fout gegaan',{root:true} );
-                
-                dispatch('load');
-            })
+            if(! response )
+                dispatch('alert/danger','Er is iets fout gegaan',{root:true} );   
+
+                dispatch('load');            
         },
 
-        load( {state,commit,dispatch} ) {                    
-            axios
-            .get(window.location.origin+'/api/route/get/mijn')
-            .then(response => {          
-                commit('SET_ROUTES',response.data);
-                commit('ROUTE_COORDINATES_PARSE_JSON');                            
-                dispatch('coordinateDistance/calculateMultipleRoutes', state.ROUTES);   
-            })                      
+        async load( {state,commit,dispatch} ) {     
+            var url = '/api/route/get/mijn';
+            await dispatch('request/get', url );   
+            var response = state.request.RESPONSE;            
+            commit('SET_ROUTES', response );
+            commit('ROUTE_COORDINATES_PARSE_JSON');                            
+            dispatch('coordinateDistance/calculateMultipleRoutes', state.ROUTES);
+
+                              
         }     
     },
 
