@@ -14,15 +14,27 @@
             </div>
         </div>
     </slot>
+
+    <div v-if="hasError">Module error: {{error.text}} <a href="#" @click="closeModuleError">sluit</a></div>
+
     <slot />
   </div>
 </template>
 
 <script>
+import {mapState,mapGetters} from 'vuex'
 export default {
   name: "error-boundary",
   props: {
     stopPropagation: Boolean
+  },
+  computed:{
+    ...mapState({
+        error : state => state.error,
+    }),
+    ...mapGetters({
+        'hasError' : 'error/HAS_ERROR'        
+    })
   },
   data() {
     return {
@@ -34,7 +46,11 @@ export default {
   methods:{
       close(){
         this.err=false;
+      },
+      closeModuleError(){
+          this.$store.dispatch('error/reset',null);
       }
+      
   },
   errorCaptured(err, vm, info) {
     this.err = err;
