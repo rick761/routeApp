@@ -9,7 +9,7 @@ import route from './module/route'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-
+  strict: true,
   state: {
   },
 
@@ -26,7 +26,7 @@ export default new Vuex.Store({
     redirecter,
     paginate,
   }
-  
+
 })
 
 
