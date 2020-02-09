@@ -1,19 +1,15 @@
 <template>
-     <div class='alert-container sticky-top fixed-top'  v-if="alert.SHOW">
-        
-            <div class="sticky-top">
-                <div style="position:absolute;">
-                    <div class='fill'>  </div>
-                    <transition name="fade">
-                        <div :class="'alert alert-'+alert.TYPE" v-if="alert.SHOW" role="alert">
-                            <h3 class="mt-2 mb-2">{{alert.TEXT}}</h3>
-                        </div>  
-                    </transition>
-                </div>
-             </div>
-
-
-       
+     <div class='alert-container sticky-top fixed-top'  v-if="alert.SHOW">        
+        <div class="sticky-top">
+            <div style="position:absolute;">
+                <div class='fill'>  </div>
+                <transition name="fade">
+                    <div :class="'alert alert-'+alert.TYPE" v-if="alert.SHOW" role="alert">
+                        <h3 class="mt-2 mb-2">{{alert.TEXT}}</h3>
+                    </div>  
+                </transition>
+            </div>
+        </div>       
     </div>
 </template>
 

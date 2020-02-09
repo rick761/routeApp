@@ -8,6 +8,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
                     <router-link active-class="active" class="nav-item " tag="li" to="/">
@@ -18,11 +19,9 @@
                         <a class="nav-link m-3" > Mijn routes</a>
                     </router-link>            
                     
-                </ul>
+                </ul>                
 
-                
-
-               <ul class="nav navbar-nav navbar-right">   
+                <ul class="nav navbar-nav navbar-right">   
                                     
                     <li class="nav-item" v-if="!isLoggedIn">
                         <a class="nav-link  m-3" @click="loginPopup">Login API</a> 

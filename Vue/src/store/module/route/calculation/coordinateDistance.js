@@ -5,12 +5,16 @@ export default {
 
         _f: {
             calculateDifferencelatitude: (previousCoordinate,coordinate) => {                
+
+                // calculation: ( | ( | lat1 - lat2 | ) * 110.57 |  ) ^ 2
                 var calculation = Math.abs( coordinate.latitude - previousCoordinate.latitude );
                 calculation = Math.abs( calculation * 110.57 );
 
                 return Math.pow( calculation, 2 );
             },
-            calculateDifferencelongtitude : (previousCoordinate,coordinate) => {                
+            calculateDifferencelongtitude : (previousCoordinate,coordinate) => { 
+                
+                // calculation: ( | ( | lng1 - lng2 | ) * 111.320 * cos ( lng1 ) | ) ^ 2
                 var calculation = Math.abs( coordinate.longtitude - previousCoordinate.longtitude );
                 calculation = Math.abs( calculation * ( 111.320*Math.cos( coordinate.longtitude ) ) );  
 
@@ -33,8 +37,7 @@ export default {
         },
 
         DISTANCES_FORMAT_FIX(state){
-            for(var i in state.MULTIPLE_DISTANCES){ 
-                //convert to 3 behind comma (also switched '.' to ',')               
+            for(var i in state.MULTIPLE_DISTANCES){                           
                 state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES[i].toFixed(3).toString().replace(".", ",");
             }
             console.log('DISTANCES_FORMAT_FIX');

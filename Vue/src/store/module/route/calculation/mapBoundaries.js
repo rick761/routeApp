@@ -1,4 +1,5 @@
 
+// constants are minimum en maximum latitude/longtitude of the world map.
 const MAPINIT_LOW_LAT = 43;
 const MAPINIT_LOW_LNG = -9;
 const MAPINIT_HIGH_LAT = 55;

@@ -25,14 +25,18 @@
 
 <script>
 export default {
-    props:['value'],
+    props:{
+        value : {
+            default: () => { return [6,6] }
+        }
+    },
 
     computed:{
         percentage(){
-            let a = this.value[0]-4;
-            let b = this.value[1]-4;
-            let total = a+b;
-            let eenheid = a/total * 100; 
+            let columnLeft = this.value[0]-4;
+            let columnRight =  this.value[1]-4;
+            let total = columnLeft+columnRight;
+            let eenheid = columnLeft/total * 100; 
             let percentage = 10 + (0.8*eenheid)  ;                
             return percentage+'%';
         }
@@ -40,13 +44,13 @@ export default {
     methods:{
         mapSizeChange(payload){
 
-            let a = 3;
-            let b = 3;
+            let columnLeft = 3;
+            let columnRight = 3;
 
-            a += payload;
-            b += (6-payload);
-
-            this.$emit('input', [a,b]);        
+            columnLeft += payload;
+            columnRight += (6-payload);
+        
+            this.$emit('input', [ columnLeft, columnRight ]);        
         }
     }    
 }

@@ -29,6 +29,7 @@ export default {
 
 
 <style scoped>
-    ul{padding: 0 10px;}
-
+    ul{
+        padding: 0 10px;
+        }
 </style>
