@@ -19,12 +19,6 @@ export default {
         patroon:[]      
     },
 
-
-    getters : {
-
-
-    }   , 
-
     mutations : {      
 
         RESET_ROUTE(state){            
@@ -101,10 +95,7 @@ export default {
             
             dispatch('alert/success','nieuwe route is gemaakt.',ROOT )
             dispatch('redirecter/redirect','/manage', ROOT );                    
-            dispatch('mapLines/removeMapLines');        
-
-        }
-        
+            dispatch('mapLines/removeMapLines');    
+        }        
     },
-
  }

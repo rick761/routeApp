@@ -5,8 +5,6 @@ import request from '../tools/request'
 
 const ROOT = {root:true};
 
-
-
 export default {    
     namespaced: true,
 
@@ -21,10 +19,7 @@ export default {
         vervoer:'',
         naam:'',
         informatie:'',     
-        patroon:[],
-        _const : {
-            ROOT : {root:true}
-        }      
+        patroon:[],            
     },
 
 

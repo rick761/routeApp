@@ -1,6 +1,6 @@
 
 
-//children
+
 import edit from './route/edit'
 import view from './route/view'
 import create from  './route/create'
@@ -24,8 +24,6 @@ export default {
         details,
         my,
         request,
-
-        //calculation modules
         mapBoundaries,
         mapLines,
         coordinateDistance        

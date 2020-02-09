@@ -49,7 +49,7 @@ export default {
             });
             
             let interval = setInterval( function(){    
-                popup.postMessage('launch Event',domain); //sending the message to get a response
+                popup.postMessage('launch Event',domain); 
                                             
             }, 200);
         },
