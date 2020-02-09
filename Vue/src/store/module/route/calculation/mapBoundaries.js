@@ -53,6 +53,7 @@ export default {
 
         createMapBoundaries({commit,state},coordinates){            
             if(coordinates){
+
                 for (let counter  in coordinates ) {
                     let latitudeItem  = coordinates[counter].coordinaten[0];
                     let longtitudeItem = coordinates[counter].coordinaten[1];
@@ -69,6 +70,7 @@ export default {
                     longtitudeItem < state.LOWER_COORDINATES.longtitude ?
                         commit('SET_LOWER_COORDINATES_LONGTITUDE',longtitudeItem) : '' ; 
                 }  
+                
             }
         },
 

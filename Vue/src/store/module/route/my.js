@@ -39,12 +39,12 @@ export default {
 
             await dispatch('request/post', POST );    
             var response = state.request.RESPONSE;
-            
+
             if( response )
                 dispatch('alert/success','Er is een route verwijderd',{root:true} );
                  
             if(! response )
-                dispatch('alert/danger','Er is iets fout gegaan',{root:true} );   
+                dispatch('error/set','Er is iets fout gegaan.', {root:true})   
 
             dispatch('load');            
         },

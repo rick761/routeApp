@@ -120,8 +120,8 @@ export default {
             await dispatch('request/post', POST);            
             var response = state.request.RESPONSE;
             
-            if(typeof response != 'object'){
-                dispatch( 'alert/danger','Error bij het laden', ROOT);
+            if(typeof response != 'object'){                
+                dispatch('error/set','Error bij het laden.', ROOT)      
                 return
             }
 

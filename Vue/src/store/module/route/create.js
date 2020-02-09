@@ -86,8 +86,8 @@ export default {
             await dispatch('request/post', POST);
             response = state.request.RESPONSE;
 
-            if(response == "error") {                
-                dispatch('alert/danger','Er is iets fout gegaan.', ROOT);                    
+            if(response == "error") { 
+                dispatch('error/set','Er is iets fout gegaan.', ROOT)      
                 return;
             }            
             
@@ -96,5 +96,5 @@ export default {
             dispatch('mapLines/removeMapLines');    
         }        
     },
-    
+
  }

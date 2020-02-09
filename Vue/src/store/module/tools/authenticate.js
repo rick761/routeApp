@@ -39,7 +39,6 @@ export default {
             );        
 
             window.addEventListener('message', function(event) {
-                console.log(event.data);                   
                  
                  if(event.data.url == constants.REST_CALL.URL+'/ApiLoginSuccesfull'){                                                 
                     commit('SET_AUTHENTICATED_USER',event.data.account) ;
@@ -51,8 +50,7 @@ export default {
             });
             
             let interval = setInterval( function(){    
-                popup.postMessage('launch Event',domain); 
-                                            
+                popup.postMessage('launch Event',domain)
             }, 200);
         },
         
@@ -61,8 +59,7 @@ export default {
             await dispatch('request/get', url );  
             
             if(typeof state.request.RESPONSE === 'object'){ 
-                commit('SET_AUTHENTICATED_USER', state.request.RESPONSE ); 
-                console.log(3);  
+                commit('SET_AUTHENTICATED_USER', state.request.RESPONSE );                 
             }                   
                      
         },
