@@ -6,6 +6,7 @@ export default {
         MULTIPLE_DISTANCES:[],
 
         _f: {
+
             calculateDifferencelatitude: (previousCoordinate,coordinate) => {  
                 // calculation: ( | ( | lat1 - lat2 | ) * 110.57 |  ) ^ 2
                 var calculation = Math.abs( coordinate.latitude - previousCoordinate.latitude );
@@ -13,6 +14,7 @@ export default {
 
                 return Math.pow( calculation, 2 );
             },
+
             calculateDifferencelongtitude : (previousCoordinate,coordinate) => { 
                 // calculation: ( | ( | lng1 - lng2 | ) * 111.320 * cos ( lng1 ) | ) ^ 2
                 var calculation = Math.abs( coordinate.longtitude - previousCoordinate.longtitude );
@@ -20,6 +22,7 @@ export default {
 
                 return Math.pow( calculation, 2 );   
             }
+
         }
 
     },
@@ -40,9 +43,12 @@ export default {
         },
 
         DISTANCES_FORMAT_FIX(state){
-            for(var i in state.MULTIPLE_DISTANCES){                           
-                state.MULTIPLE_DISTANCES[i] = state.MULTIPLE_DISTANCES[i].toFixed(3).toString().replace(".", ",");
+            for(var i in state.MULTIPLE_DISTANCES){                  
+                var fixedLength = state.MULTIPLE_DISTANCES[i].toFixed(3);        
+                var replacedComma =  fixedLength.toString().replace(".", ",");; 
+                state.MULTIPLE_DISTANCES[i] = replacedComma;
             }
+
             console.log('DISTANCES_FORMAT_FIX');
         },
 
@@ -67,7 +73,6 @@ export default {
             var distance = 0;
 
             routeCoordinateArray.forEach(CoordinatesObject => {
-
                 var coordinate = { 
                     latitude: CoordinatesObject.coordinaten[0],
                     longtitude: CoordinatesObject.coordinaten[1]
@@ -84,6 +89,7 @@ export default {
                 previousCoordinate = coordinate;
 
             })
+
             commit('ADD_DISTANCE_TO_DISTANCES', distance);              
         }
     },
