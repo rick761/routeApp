@@ -4,7 +4,10 @@ import * as constants from '../../../constants/constants'
 
 export default {
     namespaced:true,
-    modules:{ request },
+
+    modules:{ 
+        request
+    },
 
     state : {
         AUTHENTICATED_USER:{}
@@ -28,7 +31,6 @@ export default {
 
     actions : {
         loginPopup: ({commit,dispatch}) => {         
-
             var domain = constants.REST_CALL.URL;               
             let popup = window.open(
                 constants.REST_CALL.URL+'/login/google',     
@@ -53,7 +55,6 @@ export default {
                                             
             }, 200);
         },
-
         
         async load({commit,dispatch,state}){  
             var url = '/api/getAuth'; 

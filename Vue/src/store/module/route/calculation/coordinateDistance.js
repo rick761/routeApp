@@ -1,11 +1,12 @@
 export default {
+
     namespaced: true,
+
     state : {
         MULTIPLE_DISTANCES:[],
 
         _f: {
-            calculateDifferencelatitude: (previousCoordinate,coordinate) => {                
-
+            calculateDifferencelatitude: (previousCoordinate,coordinate) => {  
                 // calculation: ( | ( | lat1 - lat2 | ) * 110.57 |  ) ^ 2
                 var calculation = Math.abs( coordinate.latitude - previousCoordinate.latitude );
                 calculation = Math.abs( calculation * 110.57 );
@@ -13,7 +14,6 @@ export default {
                 return Math.pow( calculation, 2 );
             },
             calculateDifferencelongtitude : (previousCoordinate,coordinate) => { 
-                
                 // calculation: ( | ( | lng1 - lng2 | ) * 111.320 * cos ( lng1 ) | ) ^ 2
                 var calculation = Math.abs( coordinate.longtitude - previousCoordinate.longtitude );
                 calculation = Math.abs( calculation * ( 111.320*Math.cos( coordinate.longtitude ) ) );  
@@ -25,12 +25,15 @@ export default {
     },
 
     getters : {
-      GET_DISTANCES(state){
-          return state.MULTIPLE_DISTANCES;
-      }
+
+        GET_DISTANCES(state){
+            return state.MULTIPLE_DISTANCES;
+        }
+
     },
 
     mutations : {
+
         ADD_DISTANCE_TO_DISTANCES(state,distance){
            state.MULTIPLE_DISTANCES.push(distance);
            console.log('ADD_DISTANCE_TO_DISTANCES');
@@ -50,8 +53,7 @@ export default {
     },
 
     actions : {
-        calculateMultipleRoutes({dispatch,commit},routes){           
-
+        calculateMultipleRoutes({dispatch,commit},routes){     
             commit('DELETE_DISTANCES');   
                        
             for(var index in routes)

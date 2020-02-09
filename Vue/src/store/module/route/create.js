@@ -1,7 +1,5 @@
-
 import mapBoundaries from './calculation/mapBoundaries'
 import mapLines from './calculation/mapLines'
-
 
 export default {
     namespaced: true,  
@@ -38,6 +36,7 @@ export default {
                     coordinate.lng
                 ]
             }
+
             state.patroon.push(coordinateObject)
             console.log('ADD_ROUTE_COORDINATES');
         },
@@ -69,8 +68,7 @@ export default {
             dispatch('mapLines/removeMapLines');  
         },
 
-        async save({state,dispatch}){      
-
+        async save({state,dispatch}){  
             var POST = {
                 url : '/api/route/create',
                 data : {
@@ -98,4 +96,5 @@ export default {
             dispatch('mapLines/removeMapLines');    
         }        
     },
+    
  }

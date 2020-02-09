@@ -1,7 +1,3 @@
-
-
-
-
 export default {
     namespaced:true,
 
@@ -13,12 +9,15 @@ export default {
     },
 
     getters:{
+
         GET_ALERT_ID(state){
             return state.CLICK_COUNTER;
         },
+
         idIsStillTheSame(getters,payload){
             return getters.GET_ALERT_ID == payload;
         }
+
     },
 
     mutations:{        
@@ -26,15 +25,19 @@ export default {
         HIDE_ALERT: (state) => {
             state.SHOW  = false;
         },
+
         SHOW_ALERT:(state) => {
             state.SHOW  = true;
         },
+
         NEW_ALERT_ID:(state) => {
             state.ALERT_ID++;
         },
+
         SET_TEXT:(state, payload) => {
             state.TEXT = payload;
         },
+        
         SET_TYPE:(state, payload) => {
             state.TYPE = payload;
         }

@@ -17,14 +17,11 @@
 import * as Vue2Leaflet from 'vue2-leaflet' // VALID
 import { LMap, LTileLayer } from 'vue2-leaflet'
 
-
 export default {
-
     data () {return {
       zoom: 0,
       center: [0, 0], 
-      url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",  
-      
+      url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",        
     }},
 
     props: {
@@ -34,8 +31,7 @@ export default {
     },
     
     methods:{
-        emitCoordinates(event){ 
-            console.log(event); 
+        emitCoordinates(event){             
             this.$emit(
                 'input',
                 {

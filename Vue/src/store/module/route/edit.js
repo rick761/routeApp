@@ -1,4 +1,3 @@
-
 import mapBoundaries from './calculation/mapBoundaries'
 import mapLines from './calculation/mapLines'
 import request from '../tools/request'
@@ -24,12 +23,15 @@ export default {
 
 
     getters : {
+
         IS_ROUTE_LOADED(state){            
             return ( state.land != '' || state.vervoer != '' || state.naam != '' );
         },
+
     },
 
-    mutations : {     
+    mutations : {    
+
         ADD_ROUTE_COORDINATES(state,coordinate){
             var coordinateObject = {
                 naam:'',
@@ -41,10 +43,12 @@ export default {
             state.patroon.push(coordinateObject)
             console.log('ADD_ROUTE_COORDINATES');
         },
+
         DELETE_ROUTE_COORDINATES(state,payload){
             state.patroon.splice(payload,1);
             console.log('DELETE_ROUTE_COORDINATES');
         },
+
         RESET_ROUTE(state){            
             state.informatie = '';
             state.land = '';
@@ -53,6 +57,7 @@ export default {
             state.patroon = [];
             console.log('RESET_ROUTE');
         },
+
         SET_ROUTE(state,route){
             state.informatie = route.informatie;
             state.land = route.land;
@@ -90,7 +95,8 @@ export default {
                         patroon:    state.patroon
                     }
                 }     
-            }         
+            }       
+
             await dispatch('request/post', POST);
             response = state.request.RESPONSE;
 

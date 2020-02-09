@@ -9,12 +9,16 @@ import route from './module/route'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+
   state: {
   },
+
   mutations: {
   },
+
   actions: {
   },
+
   modules: {
     alert,
     authenticate,
@@ -22,6 +26,7 @@ export default new Vuex.Store({
     redirecter,
     paginate,
   }
+  
 })
 
 

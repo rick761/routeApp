@@ -6,11 +6,8 @@
 import * as Vue2Leaflet from 'vue2-leaflet' // VALID
 import { LPolyline } from 'vue2-leaflet'
     
-export default {
-    
+export default {    
     props:['lines'],
-
-    components:{ LPolyline }
-    
+    components:{ LPolyline }    
 }
 </script>
