@@ -1,22 +1,31 @@
 
 <template>
   <div>        
-    <slot v-if="err" name="error" v-bind:err="err" v-bind:vm="vm" v-bind:info="info"    >   
-        <p style="margin-top:10px;">
-            <a class="btn btn-danger" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                {{info}} ERROR, click for info.            
-            </a>
-            <a href="#" @click="close">sluit</a>
-        </p>
+    <slot v-if="err" name="error" v-bind:err="err" v-bind:vm="vm" v-bind:info="info">   
+
+          <a class="btn btn-danger"
+            data-toggle="collapse"
+            href="#collapseExample"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapseExample"
+          >
+            {{info}} ERROR, click for info.
+          </a>
+
+          <a href="#" @click="close">sluit</a>
+        
         <div class="collapse" id="collapseExample">
-            <div class="card card-body">
-                {{err}}
-            </div>
+            <div class="card card-body">{{err}}</div>
         </div>
+
     </slot>
 
-    <div v-if="hasError">Module error: {{error.text}} <a href="#" @click="closeModuleError">sluit</a></div>
-
+    <div v-if="hasError">
+      Module error:{{error.type}} - {{error.text}} 
+      <a href="#" @click="closeModuleError">sluit</a>
+    </div>
+    
     <slot />
   </div>
 </template>
