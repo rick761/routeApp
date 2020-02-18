@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-//import Home from '../views/Home.vue'
 import home     from    '../views/home.vue';
 import view   from    '../views/view.vue';
 import manage     from    '../views/manage.vue';

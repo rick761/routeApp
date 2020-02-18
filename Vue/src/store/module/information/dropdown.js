@@ -1,5 +1,5 @@
 export default {
-    
+    strict:true,
     state : {
         vervoer: [
             'Fiets',

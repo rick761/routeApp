@@ -1,23 +1,13 @@
-import edit from './route/edit'
-import view from './route/view'
-import create from  './route/create'
-import details from './route/details'
-import my from './route/my'
-import mapBoundaries from './route/calculation/mapBoundaries'
-import mapLines from './route/calculation/mapLines'
-import coordinateDistance from './route/calculation/coordinateDistance'
-import request from './tools/request'
+import mapBoundaries from '../module/calculation/mapBoundaries'
+import mapLines from '../module/calculation/mapLines'
+import coordinateDistance from '../module/calculation/coordinateDistance'
+import request from '../module/tool/request'
 
 export default {
 
     namespaced: true,
 
-    modules : {
-        edit,
-        view,
-        create,
-        details,
-        my,
+    modules : { 
         request,
         mapBoundaries,
         mapLines,

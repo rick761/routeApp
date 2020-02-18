@@ -167,7 +167,7 @@ export default {
             var route = this.$store.state.route.create;  
             switch(this.subPagePosition){
                 case 0:
-                    if(lengthSmallerThen(route.naam,7)){
+                    if(this.lengthSmallerThen(route.naam,7)){
                         this.$store.dispatch('alert/danger','De naam is kleiner dan 7 tekens.')
                         return;
                     }

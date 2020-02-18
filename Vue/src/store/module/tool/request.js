@@ -43,7 +43,8 @@ export default {
 
     actions : {
         
-        async get({commit},url){   
+        async get({commit},url){  
+            console.log(constants.REST_CALL.URL + url) 
             await axios.get( constants.REST_CALL.URL + url ).then( response => {  
                 commit('SET_RESPONSE',response);    
                 commit('FORMAT_RESPONSE');                

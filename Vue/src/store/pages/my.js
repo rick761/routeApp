@@ -1,5 +1,5 @@
-import coordinateDistance from './calculation/coordinateDistance'
-import request from '../tools/request'
+import coordinateDistance from '../module/calculation/coordinateDistance'
+import request from '../module/tool/request'
 
 export default {
 
@@ -51,8 +51,9 @@ export default {
 
         async load( {state,commit,dispatch} ) {     
             var url = '/api/route/get/mijn';
-
-            await dispatch('request/get', url );   
+            console.log(url);
+            await dispatch('request/get', url );  
+            
             var response = state.request.RESPONSE;            
             commit('SET_ROUTES', response );
             commit('ROUTE_COORDINATES_PARSE_JSON');                            

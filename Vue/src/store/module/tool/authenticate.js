@@ -1,4 +1,4 @@
-import request from '../tools/request'
+import request from './request'
 import * as constants from '../../../constants/constants'
 
 

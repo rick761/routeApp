@@ -1,4 +1,4 @@
-import request from '../tools/request'
+import request from './request'
 
 export default {
     namespaced: true,

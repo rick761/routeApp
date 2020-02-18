@@ -1,5 +1,5 @@
-import mapBoundaries from './calculation/mapBoundaries'
-import mapLines from './calculation/mapLines'
+import mapBoundaries from '../module/calculation/mapBoundaries'
+import mapLines from '../module/calculation/mapLines'
 
 export default {
     namespaced: true,  
@@ -57,7 +57,6 @@ export default {
         },
 
         removeCoordinate({commit,dispatch,state},index){
-            console.log(index);
             commit('DELETE_ROUTE_COORDINATES', index );
             dispatch('mapBoundaries/createMapBoundaries', state.patroon );
             dispatch('mapLines/createMapLines', state.patroon  );   

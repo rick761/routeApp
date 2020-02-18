@@ -4,13 +4,11 @@
                 <paginate></paginate>
         <div class="row">
 
-            <div class="" :class="'col-'+mapsize[0]">
-
-                
+            <div class="" :class="'col-'+mapsize[0]">                
 
                 <table class="table">                  
                     <tbody>
-                        <router-link tag="tr" v-for="(routeItem, index) in route.ROUTES" 
+                        <router-link tag="tr" v-for="(routeItem, index) in home.ROUTES" 
                             :to="'/view/'+routeItem.id" 
                             :key="index"                                                  
                         >                           
@@ -33,7 +31,7 @@
 
                     <!--leafletMap-->
                     <leafletMap :view="getMapBoundaries" >
-                        <leafletMapMarkers :markers="route.SHOWN_ROUTE.patroon"  /> <!---->
+                        <leafletMapMarkers :markers="home.SHOWN_ROUTE.patroon"  /> <!---->
                         <leafletMapLines :lines="getMapLines" />
                     </leafletMap>               
                     
@@ -66,17 +64,17 @@ export default {
     }},
     methods:{
         hoverOverRoute(index){   
-            this.$store.dispatch('route/hoverOverRoute', index);
+            this.$store.dispatch('home/hoverOverRoute', index);
         }
     },
     computed: {        
         ...mapState({
-            route : state => state.route,
+            home : state => state.home,
         }),    
         ...mapGetters({
-            getMapLines : 'route/mapLines/GET_MAP_LINES',
-            getMapBoundaries : 'route/mapBoundaries/GET_MAP_BOUNDARIES',
-            getDistances : 'route/coordinateDistance/GET_DISTANCES'
+            getMapLines : 'home/mapLines/GET_MAP_LINES',
+            getMapBoundaries : 'home/mapBoundaries/GET_MAP_BOUNDARIES',
+            getDistances : 'home/coordinateDistance/GET_DISTANCES'
         }),
               
     },    
@@ -88,7 +86,7 @@ export default {
         leafletMapLines
     },
     created(){        
-        this.$store.dispatch('route/load');
+        this.$store.dispatch('home/load');
     },
        
 };

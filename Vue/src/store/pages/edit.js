@@ -1,6 +1,6 @@
-import mapBoundaries from './calculation/mapBoundaries'
-import mapLines from './calculation/mapLines'
-import request from '../tools/request'
+import mapBoundaries from '../module/calculation/mapBoundaries'
+import mapLines from '../module/calculation/mapLines'
+import request from '../module/tool/request'
 
 const ROOT = {root:true};
 
